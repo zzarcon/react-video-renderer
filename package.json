@@ -1,0 +1,31 @@
+{
+  "name": "react-video-renderer",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "repository": "git@github.com:zzarcon/react-video-renderer.git",
+  "author": "Hector Leon Zarco Garcia <hezarco@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "ts-react-toolbox": "^0.0.46"
+  },
+  "engines": {
+    "node": "^8.5.0"
+  },
+  "scripts": {
+    "bootstrap": "ts-react-toolbox init",
+    "dev": "ts-react-toolbox dev",
+    "test": "ts-react-toolbox test",
+    "test:ci": "ts-react-toolbox test --runInBand --coverage",
+    "build": "ts-react-toolbox build",
+    "release": "ts-react-toolbox release",
+    "lint": "ts-react-toolbox lint",
+    "static": "ts-react-toolbox publish"
+  },
+  "peerDependencies": {
+    "react": "^16.2.0"
+  },
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ]
+}
