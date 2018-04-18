@@ -9,9 +9,23 @@ export const AppWrapper = styled.div`
 `;
 
 export const Timebar = styled.progress`
-  flex: 1;
+
 `;
 
 export const TimebarWrapper = styled.div`
   display: flex;
+  align-items: center;
+`;
+
+export const VolumeWrapper = styled.div`
+  width: 150px;
+`;
+
+export const TimeWrapper = styled.div`
+  width: 500px;
+  margin-right: 30px;
+`;
+
+export const CurrentTime = styled.div`
+  width: 100px;
 `;

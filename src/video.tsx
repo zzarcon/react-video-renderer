@@ -13,6 +13,8 @@ export interface VideoState {
 export interface VideoActions {
   play: () => void;
   pause: () => void;
+  navigate: (time: number) => void;
+  setVolume: (volume: number) => void;
 }
 
 export interface VideoProps {
@@ -107,12 +109,24 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     this.videoElement.pause();
   }
 
+  navigate = (time: number) => {
+    this.setState({currentTime: time});
+    this.videoElement.currentTime = time;
+  }
+
+  setVolume = (volume: number) => {
+    this.setState({volume});
+    this.videoElement.volume = volume;
+  }
+
   get actions(): VideoActions {
-    const {play, pause} = this;
+    const {play, pause, navigate, setVolume} = this;
 
     return {
       play,
-      pause
+      pause,
+      navigate,
+      setVolume
     };
   }
 
