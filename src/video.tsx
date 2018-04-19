@@ -15,6 +15,7 @@ export interface VideoActions {
   pause: () => void;
   navigate: (time: number) => void;
   setVolume: (volume: number) => void;
+  requestFullscreen: () => void;
 }
 
 export interface VideoProps {
@@ -119,14 +120,20 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     this.videoElement.volume = volume;
   }
 
+  requestFullscreen = () => {
+    // TODO: Add right browser prefix
+    this.videoElement.webkitRequestFullScreen();
+  }
+
   get actions(): VideoActions {
-    const {play, pause, navigate, setVolume} = this;
+    const {play, pause, navigate, setVolume, requestFullscreen} = this;
 
     return {
       play,
       pause,
       navigate,
-      setVolume
+      setVolume,
+      requestFullscreen
     };
   }
 

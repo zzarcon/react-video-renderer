@@ -18,11 +18,12 @@ export const TimebarWrapper = styled.div`
 `;
 
 export const VolumeWrapper = styled.div`
-  width: 150px;
+  flex: 1;
+  margin-right: 10px;
 `;
 
 export const TimeWrapper = styled.div`
-  width: 500px;
+  width: 700px;
   margin-right: 30px;
 `;
 

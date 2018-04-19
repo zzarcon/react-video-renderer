@@ -3,19 +3,36 @@ import {Component} from 'react';
 import FieldRange from '@atlaskit/field-range';
 import VidPlayIcon from '@atlaskit/icon/glyph/vid-play';
 import VidPauseIcon from '@atlaskit/icon/glyph/vid-pause';
+import VidFullScreenOnIcon from '@atlaskit/icon/glyph/vid-full-screen-on';
 import Button from '@atlaskit/button';
 import Video from '../src';
 import {CurrentTime, AppWrapper, TimebarWrapper, Timebar, VolumeWrapper, TimeWrapper} from './styled';
 
-export interface AppState {
-  
+export interface VideoSource {
+  label: string;
+  src: string;
 }
 
-const videoSrc = 'http://vjs.zencdn.net/v/oceans.mp4';
+export interface AppState {
+  currentSource: VideoSource;
+}
+
+const hdVideoSrc = 'http://vjs.zencdn.net/v/oceans.mp4';
+const sdVideoSrc = 'http://www.onirikal.com/videos/mp4/battle_games.mp4';
+const sources = [
+  {
+    label: 'hd',
+    src: hdVideoSrc
+  },
+  {
+    label: 'sd',
+    src: sdVideoSrc
+  },
+];
 
 export default class App extends Component <{}, AppState> {
   state: AppState = {
-    
+    currentSource: sources[0]
   }
 
   onTimeChange = (navigate: Function) => (value: number) => {
@@ -27,14 +44,19 @@ export default class App extends Component <{}, AppState> {
   }
 
   render() {
+    const {currentSource} = this.state;
+
     return (
       <AppWrapper>
-        <Video src={videoSrc} >
+        <Video src={currentSource.src} >
           {(video, videoState, actions) => {
             const button = videoState.status === 'playing' ? (
               <Button appearance="primary" iconBefore={<VidPauseIcon label="play" />} onClick={actions.pause} />
              ) : (
               <Button appearance="primary" iconBefore={<VidPlayIcon label="pause" />} onClick={actions.play} />
+             );
+             const fullScreenButton = (
+              <Button appearance="primary" iconBefore={<VidFullScreenOnIcon label="fullscreen" />} onClick={actions.requestFullscreen} />
              );
 
             return (
@@ -50,6 +72,7 @@ export default class App extends Component <{}, AppState> {
                       value={videoState.currentTime}
                       min={0}
                       max={videoState.duration}
+                      // step={2}
                       onChange={this.onTimeChange(actions.navigate)}
                     />
                   </TimeWrapper>
@@ -62,6 +85,7 @@ export default class App extends Component <{}, AppState> {
                       onChange={this.onVolumeChange(actions.setVolume)}
                     />
                   </VolumeWrapper>
+                  {fullScreenButton}
                 </TimebarWrapper>                
               </div>
             );
