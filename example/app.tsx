@@ -18,7 +18,8 @@ export interface AppState {
 }
 
 const hdVideoSrc = 'http://vjs.zencdn.net/v/oceans.mp4';
-const sdVideoSrc = 'http://www.onirikal.com/videos/mp4/battle_games.mp4';
+// const sdVideoSrc = 'http://www.onirikal.com/videos/mp4/battle_games.mp4';
+const sdVideoSrc = 'http://vjs.zencdn.net/v/oceans.webm';
 const sources = [
   {
     label: 'hd',
@@ -43,6 +44,14 @@ export default class App extends Component <{}, AppState> {
     setVolume(value);
   }
 
+  toggleHD = () => {
+    const {currentSource} = this.state;
+
+    this.setState({
+      currentSource: currentSource === sources[1] ? sources[0] : sources[1]
+    });
+  }
+
   render() {
     const {currentSource} = this.state;
 
@@ -58,6 +67,8 @@ export default class App extends Component <{}, AppState> {
              const fullScreenButton = (
               <Button appearance="primary" iconBefore={<VidFullScreenOnIcon label="fullscreen" />} onClick={actions.requestFullscreen} />
              );
+             const hdButtonAppearance = currentSource.label === 'hd' ? 'primary' : undefined;
+             const hdButton = <Button appearance={hdButtonAppearance} onClick={this.toggleHD}>HD</Button>
 
             return (
               <div>
@@ -85,6 +96,7 @@ export default class App extends Component <{}, AppState> {
                       onChange={this.onVolumeChange(actions.setVolume)}
                     />
                   </VolumeWrapper>
+                  {hdButton}
                   {fullScreenButton}
                 </TimebarWrapper>                
               </div>

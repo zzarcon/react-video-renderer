@@ -44,7 +44,18 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     autoPlay: false,
     controls: false
   }
-  
+
+  componentDidUpdate(prevProps: VideoProps) {
+    const {src} = this.props;
+    const {currentTime} = this.state;
+    const hasSrcChanged = prevProps.src !== src;
+    
+    if (hasSrcChanged) {
+      this.play();
+      this.navigate(currentTime);
+    }
+  }
+
   onVolumeChange = (e: any) => {
     const video = e.target as HTMLVideoElement;
     
