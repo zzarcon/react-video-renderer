@@ -58,3 +58,4 @@ typings/
 .env
 
 publish_dist
+dist
