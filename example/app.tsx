@@ -6,7 +6,7 @@ import VidPauseIcon from '@atlaskit/icon/glyph/vid-pause';
 import VidFullScreenOnIcon from '@atlaskit/icon/glyph/vid-full-screen-on';
 import Button from '@atlaskit/button';
 import Video from '../src';
-import {CurrentTime, AppWrapper, TimebarWrapper, Timebar, VolumeWrapper, TimeWrapper} from './styled';
+import {CurrentTime, AppWrapper, TimebarWrapper, Timebar, VolumeWrapper, TimeWrapper, BufferedProgress} from './styled';
 
 export interface VideoSource {
   label: string;
@@ -79,6 +79,10 @@ export default class App extends Component <{}, AppState> {
                     {Math.round(videoState.currentTime)} / {Math.round(videoState.duration)}
                   </CurrentTime>
                   <TimeWrapper>
+                    <BufferedProgress 
+                      value={videoState.buffered}
+                      max={videoState.duration}
+                    />
                     <FieldRange
                       value={videoState.currentTime}
                       min={0}

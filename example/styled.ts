@@ -1,9 +1,14 @@
-import styled from 'styled-components';
+import styled, {injectGlobal} from 'styled-components';
+
+injectGlobal`
+  body {
+    background-color: lavender;
+  }
+`;
 
 export const AppWrapper = styled.div`
   width: 1000px;
   margin: 0 auto;
-  background-color: cadetblue;
   text-align: center;
   padding: 10px;
 `;
@@ -29,4 +34,8 @@ export const TimeWrapper = styled.div`
 
 export const CurrentTime = styled.div`
   width: 100px;
+`;
+
+export const BufferedProgress = styled.progress`
+  width: 100%;
 `;
