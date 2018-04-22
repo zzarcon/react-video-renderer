@@ -1,13 +1,16 @@
 import * as React from 'react';
 import {Component, ReactNode} from 'react';
+import {requestFullScreen} from './utils';
 
 export type VideoStatus = 'playing' | 'paused';
 
+// TODO: Improve interface, don't make everything optional
 export interface VideoState {
+  status: VideoStatus;
   currentTime?: number;
   volume?: number;
-  status: VideoStatus;
   duration?: number;
+  buffered: number;
 }
 
 export interface VideoActions {
@@ -18,11 +21,13 @@ export interface VideoActions {
   requestFullscreen: () => void;
 }
 
+export type RenderCallback = (videoElement: ReactNode, state: VideoState, actions: VideoActions) => ReactNode;
 export interface VideoProps {
   src: string;
-  children: (videoElement: ReactNode, state: VideoState, actions: VideoActions) => ReactNode;
+  children: RenderCallback;
   controls?: boolean;
   autoPlay?: boolean;
+  preload?: string;
 }
 
 export interface VideoComponentState {
@@ -31,18 +36,20 @@ export interface VideoComponentState {
   volume?: number;
   status?: VideoStatus;
   duration?: number;
+  buffered: number;
 }
 
 export class Video extends Component<VideoProps, VideoComponentState> {
   videoElement: HTMLVideoElement;
 
   state: VideoComponentState = {
-    
+    buffered: 0
   }
 
   static defaultProps: Partial<VideoProps> = {
     autoPlay: false,
-    controls: false
+    controls: false,
+    preload: 'metadata'
   }
 
   componentDidUpdate(prevProps: VideoProps) {
@@ -64,16 +71,18 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     })
   }
 
-  onLoadedMetadata = (e: any) => {
-    // console.log(e.target)
-  }
-
   onTimeUpdate = (e: any) => {
     const video = e.target as HTMLVideoElement;
 
     this.setState({
       currentTime: video.currentTime
     });
+
+    if (video.buffered.length) {
+      const buffered = video.buffered.end(video.buffered.length - 1);
+
+      this.setState({buffered});
+    }
   }
 
   onCanPlay = (e: any) => {
@@ -103,13 +112,14 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   } 
 
   get videoState(): VideoState {
-    const {currentTime, volume, status, duration} = this.state;
+    const {currentTime, volume, status, duration, buffered} = this.state;
 
     return {
       currentTime,
       volume,
       status,
-      duration
+      duration,
+      buffered
     };
   }
 
@@ -132,8 +142,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   requestFullscreen = () => {
-    // TODO: Add right browser prefix
-    this.videoElement.webkitRequestFullScreen();
+    requestFullScreen(this.videoElement);
   }
 
   get actions(): VideoActions {
@@ -152,24 +161,32 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     this.videoElement = element;
   }
 
+  onDurationChange = (e: any) => {
+    const video = e.target as HTMLVideoElement;
+    
+    this.setState({
+      duration: video.duration
+    });
+  }
+
   render() {
     const {videoState, actions} = this;
     const {video} = this.state;
-    const {src, children, autoPlay, controls} = this.props;
+    const {src, children, autoPlay, controls, preload} = this.props;
 
     return children(
       <video
         ref={this.saveVideoRef}
         src={src}
-        preload="metadata"
+        preload={preload}
         controls={controls}
         autoPlay={autoPlay}
         onPlay={this.onPlay}
         onPause={this.onPause}
         onVolumeChange={this.onVolumeChange}
-        onLoadedMetadata={this.onLoadedMetadata}
         onTimeUpdate={this.onTimeUpdate}
         onCanPlay={this.onCanPlay}
+        onDurationChange={this.onDurationChange}
       />,
       videoState,
       actions      
