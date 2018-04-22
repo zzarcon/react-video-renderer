@@ -1,8 +1,11 @@
 # react-video-renderer [![Build Status](https://travis-ci.org/zzarcon/react-video-renderer.svg?branch=master)](https://travis-ci.org/zzarcon/react-video-renderer)
 > Videos in React with render props
 
-Build custom video players with ease. react-video-renderer gives you all you need to build beautiful video players,you just need to build the UI.
-It provides a bidirectional flow that allows you to render and update the state of the video in a declarative way. It removes annoying stuff like cross-browser support, state, etc, that you have to deal with when building custom video players.
+* Build custom video players with ease.
+* Bidirectional flow to render and update the video state in a declarative way.
+* No side effects out of the box, you just need to build the UI.
+* Dependency free, [<2KB size](https://bundlephobia.com/result?p=react-video-renderer)
+* Cross-browser support, forget annoying browser specifiy hacks.
 
 # Demo
 
@@ -37,6 +40,7 @@ import Video from 'react-video-renderer';
   <img src="example/video-renderer-flow.png" alt="Logo" >
   <br><br>
 </div>
+
 # Api
 
 **props**
