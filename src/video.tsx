@@ -7,9 +7,9 @@ export type VideoStatus = 'playing' | 'paused';
 // TODO: Improve interface, don't make everything optional
 export interface VideoState {
   status: VideoStatus;
-  currentTime?: number;
-  volume?: number;
-  duration?: number;
+  currentTime: number;
+  volume: number;
+  duration: number;
   buffered: number;
 }
 
@@ -31,11 +31,10 @@ export interface VideoProps {
 }
 
 export interface VideoComponentState {
-  video?: HTMLVideoElement;
-  currentTime?: number;
-  volume?: number;
-  status?: VideoStatus;
-  duration?: number;
+  currentTime: number;
+  volume: number;
+  status: VideoStatus;
+  duration: number;
   buffered: number;
 }
 
@@ -43,7 +42,11 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   videoElement: HTMLVideoElement;
 
   state: VideoComponentState = {
-    buffered: 0
+    buffered: 0,
+    currentTime: 0,
+    volume: 0,
+    status: 'paused',
+    duration: 0
   }
 
   static defaultProps: Partial<VideoProps> = {
@@ -56,7 +59,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     const {src} = this.props;
     const {currentTime} = this.state;
     const hasSrcChanged = prevProps.src !== src;
-    
+
     if (hasSrcChanged) {
       this.play();
       this.navigate(currentTime);
@@ -158,6 +161,8 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   saveVideoRef = (element: HTMLVideoElement) => {
+    if (!element) {return;}
+
     this.videoElement = element;
   }
 
@@ -171,7 +176,6 @@ export class Video extends Component<VideoProps, VideoComponentState> {
 
   render() {
     const {videoState, actions} = this;
-    const {video} = this.state;
     const {src, children, autoPlay, controls, preload} = this.props;
 
     return children(
