@@ -1,4 +1,4 @@
-# react-video-renderer
+# react-video-renderer [![Build Status](https://travis-ci.org/zzarcon/react-video-renderer.svg?branch=master)](https://travis-ci.org/zzarcon/react-video-renderer)
 > Videos in React with render props
 
 Build custom video players with ease. react-video-renderer gives you all you need to build beautiful video players,you just need to build the UI.
