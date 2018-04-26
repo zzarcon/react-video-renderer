@@ -18,6 +18,9 @@ $ yarn add react-video-renderer
 ```
 
 # Usage
+
+Simple demo on how to render the video state and communicate user interactions up when volume or time changes.
+
 ```jsx
 import Video from 'react-video-renderer';
 
@@ -68,9 +71,9 @@ type VideoStatus = 'playing' | 'paused';
 
 interface State {
   status: VideoStatus;
-  currentTime?: number;
-  volume?: number;
-  duration?: number;
+  currentTime: number;
+  volume: number;
+  duration: number;
   buffered: number;
 }
 ```
@@ -86,3 +89,7 @@ interface Actions {
   requestFullscreen: () => void;
 }
 ```
+
+# Author
+
+🧔 [@zzarcon](https://twitter.com/zzarcon)

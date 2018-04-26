@@ -7,7 +7,6 @@
   "license": "MIT",
   "devDependencies": {
     "@atlaskit/button": "^7.0.2",
-    "@atlaskit/field-range": "^3.0.0",
     "@atlaskit/icon": "^11.0.0",
     "ts-react-toolbox": "^0.0.46"
   },

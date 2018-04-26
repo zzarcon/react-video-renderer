@@ -17,15 +17,6 @@
     babel-runtime "^6.26.0"
     styled-components "1.4.6 - 3"
 
-"@atlaskit/field-range@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@atlaskit/field-range/-/field-range-3.0.0.tgz#f0537a1b66b51ac355ffa565773df4e9c26262dc"
-  dependencies:
-    "@atlaskit/theme" "^3.0.0"
-    babel-runtime "^6.26.0"
-    prop-types "^15.5.10"
-    styled-components "1.4.6 - 3"
-
 "@atlaskit/icon@^11.0.0":
   version "11.0.0"
   resolved "https://registry.yarnpkg.com/@atlaskit/icon/-/icon-11.0.0.tgz#47422ba7441fa3af4d9ff6c8eba437f1fdb676e5"

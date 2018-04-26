@@ -1,12 +1,12 @@
 import * as React from 'react';
 import {Component} from 'react';
-import FieldRange from '@atlaskit/field-range';
 import VidPlayIcon from '@atlaskit/icon/glyph/vid-play';
 import VidPauseIcon from '@atlaskit/icon/glyph/vid-pause';
 import VidFullScreenOnIcon from '@atlaskit/icon/glyph/vid-full-screen-on';
 import Button from '@atlaskit/button';
 import Video from '../src';
-import {CurrentTime, AppWrapper, TimebarWrapper, Timebar, VolumeWrapper, TimeWrapper, BufferedProgress} from './styled';
+import {ControlsWrapper, TimeRangeWrapper, CurrentTime, AppWrapper, TimebarWrapper, Timebar, VolumeWrapper, TimeWrapper, BufferedProgress} from './styled';
+import {TimeRange} from './timeRange';
 
 export interface VideoSource {
   label: string;
@@ -60,48 +60,41 @@ export default class App extends Component <{}, AppState> {
         <Video src={currentSource.src} >
           {(video, videoState, actions) => {
             const button = videoState.status === 'playing' ? (
-              <Button appearance="primary" iconBefore={<VidPauseIcon label="play" />} onClick={actions.pause} />
+              <Button iconBefore={<VidPauseIcon label="play" />} onClick={actions.pause} />
              ) : (
-              <Button appearance="primary" iconBefore={<VidPlayIcon label="pause" />} onClick={actions.play} />
+              <Button iconBefore={<VidPlayIcon label="pause" />} onClick={actions.play} />
              );
              const fullScreenButton = (
-              <Button appearance="primary" iconBefore={<VidFullScreenOnIcon label="fullscreen" />} onClick={actions.requestFullscreen} />
+              <Button iconBefore={<VidFullScreenOnIcon label="fullscreen" />} onClick={actions.requestFullscreen} />
              );
-             const hdButtonAppearance = currentSource.label === 'hd' ? 'primary' : undefined;
-             const hdButton = <Button appearance={hdButtonAppearance} onClick={this.toggleHD}>HD</Button>
+            //  const hdButtonAppearance = currentSource.label === 'hd' ? 'primary' : undefined;
+             const hdButton = <Button onClick={this.toggleHD}>HD</Button>
 
             return (
               <div>
                 {video}
                 <TimebarWrapper>
-                  {button}
-                  <CurrentTime>
-                    {Math.round(videoState.currentTime)} / {Math.round(videoState.duration)}
-                  </CurrentTime>
-                  <TimeWrapper>
-                    <BufferedProgress 
-                      value={videoState.buffered}
-                      max={videoState.duration}
-                    />
-                    <FieldRange
-                      value={videoState.currentTime}
-                      min={0}
-                      max={videoState.duration}
-                      // step={2}
+                  <TimeRangeWrapper>
+                    <TimeRange
+                      currentTime={videoState.currentTime}
+                      bufferedTime={videoState.buffered}
+                      duration={videoState.duration}
                       onChange={this.onTimeChange(actions.navigate)}
                     />
-                  </TimeWrapper>
-                  <VolumeWrapper>
-                    <FieldRange
-                      value={videoState.volume}
-                      min={0}
-                      max={1}
-                      step={0.01}
-                      onChange={this.onVolumeChange(actions.setVolume)}
-                    />
-                  </VolumeWrapper>
-                  {hdButton}
-                  {fullScreenButton}
+                  </TimeRangeWrapper>
+                  <ControlsWrapper>
+                    {button}
+                    <CurrentTime>
+                      {Math.round(videoState.currentTime)} / {Math.round(videoState.duration)}
+                    </CurrentTime>
+                    <TimeWrapper>
+                    </TimeWrapper>
+                    <VolumeWrapper>
+                      
+                    </VolumeWrapper>
+                    {hdButton}
+                    {fullScreenButton}
+                  </ControlsWrapper>
                 </TimebarWrapper>                
               </div>
             );
