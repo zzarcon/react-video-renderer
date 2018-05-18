@@ -1,6 +1,6 @@
 export const requestFullScreen = (element: HTMLVideoElement) => {
   const methods = ['requestFullscreen', 'webkitRequestFullscreen', 'mozRequestFullScreen', 'msRequestFullscreen'];
-  const methodName = methods.find(name => element[name]);
+  const methodName = methods.find(name => (element as any)[name]);
   
-  element[methodName]();
+  (element as any)[methodName]();
 }
