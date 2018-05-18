@@ -5,11 +5,14 @@ injectGlobal`
     padding: 0;
     margin: 0;
   }
+
+  .cdSVOz, .grZUYY {
+    color: white !important;
+  }
 `;
 
 export const AppWrapper = styled.div`
   text-align: center;
-  padding: 10px;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -30,9 +33,42 @@ export const TimebarWrapper = styled.div`
   width: 100%;
 `;
 
+export interface VolumeWrapperProps {
+  isMutted: boolean;
+}
+
+export const MuttedIndicator = styled.div`
+  width: 29px;
+  height: 2px;
+  position: absolute;
+  top: 5px;
+  left: 9px;
+  background: white;
+  transform: rotate(32deg) translateY(10px);
+  opacity: 0;
+  pointer-events: none;
+
+  ${(props: VolumeWrapperProps) => props.isMutted ? `
+    opacity: 1;
+  ` : ''}
+`;
+
 export const VolumeWrapper = styled.div`
-  flex: 1;
-  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  width: 35px;
+  overflow: hidden;
+  transition: width .3s;
+
+  input {
+    margin-left: 20px;
+  }
+
+  &:hover {
+    width: 165px;
+  }
 `;
 
 export const TimeWrapper = styled.div`
@@ -41,7 +77,7 @@ export const TimeWrapper = styled.div`
 `;
 
 export const CurrentTime = styled.div`
-  width: 100px;
+  width: 60px;
 `;
 
 export const BufferedProgress = styled.progress`
@@ -54,7 +90,6 @@ export const TimeLine = styled.div`
   background-color: rgba(255,255,255,.2);
   border-radius: 5px;
   position: relative;
-  cursor: pointer;
 `;
 
 export const CurrentTimeLine = styled.div`
@@ -89,14 +124,42 @@ export const TimeRangeWrapper = styled.div`
 export const ControlsWrapper = styled.div`
   display: flex;
   align-items: center;
+  color: #eee;
+  user-select: none;
+  font-size: 13px;
+  justify-content: space-between;
+  margin: 10px;
 `;
 
 export const TimeLineWrapper = styled.div`
+  cursor: pointer;
   height: 20px;
   display: flex;
   align-items: center;
 
-  &:hover ${TimeLine} {
-    height: 6px;
+  &:hover {
+    ${TimeLine} {
+      height: 6px;
+    }
+    ${CurrentTimeLine} {
+      min-width: 13px;
+    }
   }
+`;
+
+export const LeftControls = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+export const RightControls = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+export const VideoWrapper = styled.div`
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
 `;

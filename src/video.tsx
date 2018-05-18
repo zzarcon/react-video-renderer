@@ -4,13 +4,13 @@ import {requestFullScreen} from './utils';
 
 export type VideoStatus = 'playing' | 'paused';
 
-// TODO: Improve interface, don't make everything optional
 export interface VideoState {
   status: VideoStatus;
   currentTime: number;
   volume: number;
   duration: number;
   buffered: number;
+  // isMutted: boolean; // TODO: implement
 }
 
 export interface VideoActions {
@@ -19,6 +19,9 @@ export interface VideoActions {
   navigate: (time: number) => void;
   setVolume: (volume: number) => void;
   requestFullscreen: () => void;
+  mute: () => void;
+  unmute: () => void;
+  toggleMute: () => void;
 }
 
 export type RenderCallback = (videoElement: ReactNode, state: VideoState, actions: VideoActions) => ReactNode;
@@ -57,11 +60,15 @@ export class Video extends Component<VideoProps, VideoComponentState> {
 
   componentDidUpdate(prevProps: VideoProps) {
     const {src} = this.props;
-    const {currentTime} = this.state;
+    const {currentTime, status} = this.state;
     const hasSrcChanged = prevProps.src !== src;
 
     if (hasSrcChanged) {
-      this.play();
+      // TODO: add test to cover this case
+      if (status === 'playing') {
+        this.play();
+      }
+
       this.navigate(currentTime);
     }
   }
@@ -148,15 +155,37 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     requestFullScreen(this.videoElement);
   }
 
+  mute = () => {
+    this.setVolume(0);
+  }
+
+  unmute = () => {
+    // TODO: Set volume to previous value before mutting
+    this.setVolume(0.5);
+  }
+
+  toggleMute = () => {
+    const {volume} = this.videoState;
+
+    if (volume > 0) {
+      this.mute();
+    } else {
+      this.unmute();
+    }
+  }
+
   get actions(): VideoActions {
-    const {play, pause, navigate, setVolume, requestFullscreen} = this;
+    const {play, pause, navigate, setVolume, requestFullscreen, mute, unmute, toggleMute} = this;
 
     return {
       play,
       pause,
       navigate,
       setVolume,
-      requestFullscreen
+      requestFullscreen,
+      mute,
+      unmute,
+      toggleMute
     };
   }
 

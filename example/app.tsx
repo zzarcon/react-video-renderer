@@ -3,9 +3,10 @@ import {Component} from 'react';
 import VidPlayIcon from '@atlaskit/icon/glyph/vid-play';
 import VidPauseIcon from '@atlaskit/icon/glyph/vid-pause';
 import VidFullScreenOnIcon from '@atlaskit/icon/glyph/vid-full-screen-on';
+import VolumeIcon from '@atlaskit/icon/glyph/hipchat/outgoing-sound';
 import Button from '@atlaskit/button';
 import Video from '../src';
-import {ControlsWrapper, TimeRangeWrapper, CurrentTime, AppWrapper, TimebarWrapper, Timebar, VolumeWrapper, TimeWrapper, BufferedProgress} from './styled';
+import {VideoWrapper, MuttedIndicator, LeftControls, RightControls, ControlsWrapper, TimeRangeWrapper, CurrentTime, AppWrapper, TimebarWrapper, Timebar, VolumeWrapper, TimeWrapper, BufferedProgress} from './styled';
 import {TimeRange} from './timeRange';
 
 export interface VideoSource {
@@ -40,7 +41,8 @@ export default class App extends Component <{}, AppState> {
     navigate(value);
   }
 
-  onVolumeChange = (setVolume: Function) => (value: number) => {
+  onVolumeChange = (setVolume: Function) => (e: any) => {
+    const value = e.target.value;
     setVolume(value);
   }
 
@@ -69,9 +71,10 @@ export default class App extends Component <{}, AppState> {
              );
             //  const hdButtonAppearance = currentSource.label === 'hd' ? 'primary' : undefined;
              const hdButton = <Button onClick={this.toggleHD}>HD</Button>
+             const isMutted = videoState.volume === 0; 
 
             return (
-              <div>
+              <VideoWrapper>
                 {video}
                 <TimebarWrapper>
                   <TimeRangeWrapper>
@@ -83,20 +86,24 @@ export default class App extends Component <{}, AppState> {
                     />
                   </TimeRangeWrapper>
                   <ControlsWrapper>
-                    {button}
-                    <CurrentTime>
-                      {Math.round(videoState.currentTime)} / {Math.round(videoState.duration)}
-                    </CurrentTime>
-                    <TimeWrapper>
-                    </TimeWrapper>
-                    <VolumeWrapper>
-                      
-                    </VolumeWrapper>
-                    {hdButton}
-                    {fullScreenButton}
+                    <LeftControls>
+                      {button}
+                      <CurrentTime>
+                        {Math.round(videoState.currentTime)} / {Math.round(videoState.duration)}
+                      </CurrentTime>
+                      <VolumeWrapper>
+                        <MuttedIndicator isMutted={isMutted} />
+                        <Button onClick={actions.toggleMute} iconBefore={<VolumeIcon label="volume" />} />
+                        <input type="range" step="0.01" value={videoState.volume} max={1} onChange={this.onVolumeChange(actions.setVolume)} />
+                      </VolumeWrapper>  
+                    </LeftControls>
+                    <RightControls>
+                      {hdButton}
+                      {fullScreenButton}
+                    </RightControls>                    
                   </ControlsWrapper>
                 </TimebarWrapper>                
-              </div>
+              </VideoWrapper>
             );
           }}
         </Video>

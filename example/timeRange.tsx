@@ -36,7 +36,7 @@ export class TimeRange extends Component<TimeRangeProps, TimeRangeState> {
 
     const { currentTime, onChange, duration } = this.props;
     const { movementX } = e;
-    const thumbCorrection = 18;
+    const thumbCorrection = 65;
     const movementPercentage =
       Math.abs(movementX) * 100 / duration / thumbCorrection;
 
