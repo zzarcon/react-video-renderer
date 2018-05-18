@@ -106,8 +106,6 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   onPlay = (e: any) => {
-    const video = e.target as HTMLVideoElement;
-    
     this.setState({
       status: 'playing'
     });

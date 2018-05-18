@@ -46,7 +46,7 @@ describe('VideoRenderer', () => {
       }));
     });
 
-    it('should play new src at the current time when src changes', () => {
+    it('should play new src at the current time when src changes and video is not paused', () => {
       const {component, children} = setup();
       const instance = component.instance() as Video;
 
@@ -59,10 +59,11 @@ describe('VideoRenderer', () => {
           buffered: {}
         }
       });
+      component.find('video').simulate('play');
       component.setProps({
         src: 'new-src'
       });
-
+      component.update();
       expect(instance.play).toHaveBeenCalledTimes(1);
       expect(instance.navigate).toBeCalledWith(10);
       expect(component.prop('src')).toEqual('new-src');
