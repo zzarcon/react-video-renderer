@@ -63,7 +63,6 @@ describe('VideoRenderer', () => {
       component.setProps({
         src: 'new-src'
       });
-      component.update();
       expect(instance.play).toHaveBeenCalledTimes(1);
       expect(instance.navigate).toBeCalledWith(10);
       expect(component.prop('src')).toEqual('new-src');
@@ -86,8 +85,7 @@ describe('VideoRenderer', () => {
           duration: 25
         }
       });
-      component.update();
-      
+
       expect(children.mock.calls[1][1]).toEqual({
         currentTime: 1,
         volume: 0.5,
@@ -99,32 +97,54 @@ describe('VideoRenderer', () => {
 
     it('should return the current time whenever time changes', () => {
       const {component, children} = setup();
-
       component.find('video').simulate('timeUpdate', {
         target: {
           currentTime: 1,
           buffered: {}
         }
       });
-      component.update();
-      
+
       expect(children.mock.calls[1][1]).toEqual({
         currentTime: 1,
         volume: 0,
         status: 'paused',
         duration: 0,
         buffered: 0
-      })
+      });
     });
 
-    xit('should return volume value on change', () => {
+    it('should return volume value on change', () => {
+      const {component, children} = setup();
+      component.find('video').simulate('volumeChange', {
+        target: {
+          volume: 10
+        }
+      });
+      expect(children.mock.calls[1][1]).toEqual({
+        currentTime: 0,
+        volume: 10,
+        status: 'paused',
+        duration: 0,
+        buffered: 0
+      });
+    });
 
+    it('should reset duration when video duration changes', () => {
+      const {component, children} = setup();
+      component.find('video').simulate('durationChange', {
+        target: {
+          duration: 10
+        }
+      });
+      expect(children.mock.calls[1][1]).toEqual({
+        currentTime: 0,
+        volume: 0,
+        status: 'paused',
+        duration: 10,
+        buffered: 0
+      });
     });
-  
-    xit('should reset duration when video duration changes', () => {
-  
-    });
-  
+
     xit('should return the buffered value', () => {
       // TODO: fake multiple ranges
     });
@@ -138,11 +158,11 @@ describe('VideoRenderer', () => {
     xit('should play the video when play action is called', () => {
 
     });
-    
+
     xit('should pause the video when pause action is called', () => {
 
     });
-    
+
     xit('should change video volume when setVolume is called', () => {
 
     });
