@@ -6,7 +6,7 @@ import VidFullScreenOnIcon from '@atlaskit/icon/glyph/vid-full-screen-on';
 import VolumeIcon from '@atlaskit/icon/glyph/hipchat/outgoing-sound';
 import Button from '@atlaskit/button';
 import Video from '../src';
-import {VideoWrapper, MuttedIndicator, LeftControls, RightControls, ControlsWrapper, TimeRangeWrapper, CurrentTime, AppWrapper, TimebarWrapper, Timebar, VolumeWrapper, TimeWrapper, BufferedProgress} from './styled';
+import {ErrorWrapper, VideoWrapper, MuttedIndicator, LeftControls, RightControls, ControlsWrapper, TimeRangeWrapper, CurrentTime, AppWrapper, TimebarWrapper, Timebar, VolumeWrapper, TimeWrapper, BufferedProgress} from './styled';
 import {TimeRange} from './timeRange';
 
 export interface VideoSource {
@@ -62,6 +62,14 @@ export default class App extends Component <{}, AppState> {
       <AppWrapper>
         <Video src={currentSource.src} >
           {(video, videoState, actions) => {
+            if (videoState.status === 'errored') {
+              return (
+                <ErrorWrapper>
+                  Error
+                </ErrorWrapper>
+              );
+            }
+
             const button = videoState.status === 'playing' ? (
               <Button iconBefore={<VidPauseIcon label="play" />} onClick={actions.pause} />
              ) : (
