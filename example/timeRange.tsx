@@ -57,7 +57,7 @@ export class TimeRange extends Component<TimeRangeProps, TimeRangeState> {
     });
   };
 
-  onNavigate = e => {
+  onNavigate = (e: any) => {
     const { duration, onChange } = this.props;
     const event = e.nativeEvent;
     const x = event.x;
