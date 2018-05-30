@@ -2,7 +2,7 @@ import * as React from 'react';
 import {Component, ReactNode} from 'react';
 import {requestFullScreen} from './utils';
 
-export type VideoStatus = 'playing' | 'paused';
+export type VideoStatus = 'playing' | 'paused' | 'errored';
 
 export interface VideoState {
   status: VideoStatus;
@@ -13,11 +13,14 @@ export interface VideoState {
   // isMutted: boolean; // TODO: implement
 }
 
+export type NavigateFunction = (time: number) => void;
+export type SetVolumeFunction = (volume: number) => void;
+
 export interface VideoActions {
   play: () => void;
   pause: () => void;
-  navigate: (time: number) => void;
-  setVolume: (volume: number) => void;
+  navigate: NavigateFunction;
+  setVolume: SetVolumeFunction;
   requestFullscreen: () => void;
   mute: () => void;
   unmute: () => void;
@@ -201,8 +204,10 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     });
   }
 
-  onError = (e) => {
-
+  onError = () => {
+    this.setState({
+      status: 'errored'
+    });
   }
 
   render() {

@@ -149,6 +149,14 @@ describe('VideoRenderer', () => {
     xit('should return the buffered value', () => {
       // TODO: fake multiple ranges
     });
+
+    it('should return error status when the video is errored', () => {
+      const {component, children} = setup();
+
+      component.find('video').simulate('error');
+
+      expect(component.state('status')).toEqual('errored');
+    });
   });
 
   describe('actions', () => {
