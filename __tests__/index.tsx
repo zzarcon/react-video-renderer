@@ -1,14 +1,15 @@
 import * as React from 'react';
+import { ReactNode } from 'react';
 import {shallow, mount} from 'enzyme';
-import Video, {VideoProps} from '../src';
+import Video, {VideoProps, RenderCallback, VideoActions, VideoState} from '../src';
 
 describe('VideoRenderer', () => {
   const setup = (props?: Partial<VideoProps>) => {
     const src = 'video-url';
-    const children = jest.fn().mockImplementation((video) => {
+    const children = (props && props.children) || jest.fn().mockImplementation((video) => {
       return video;
     });
-    const component = shallow((
+    const component = mount((
       <Video src={src} {...props}>
         {children}
       </Video>
@@ -151,8 +152,17 @@ describe('VideoRenderer', () => {
   });
 
   describe('actions', () => {
-    xit('should set video current time to passed time when navigate is called', () => {
 
+    let videoActions: VideoActions;
+    const children: RenderCallback = (videoElement: ReactNode, state: VideoState, actions: VideoActions) => {
+      videoActions = actions;
+      return videoElement;
+    };
+
+    it('should set video current time to passed time when navigate is called', () => {
+      const {component} = setup({children});
+      videoActions.navigate(10);
+      expect(component.state().currentTime).toEqual(10);
     });
 
     xit('should play the video when play action is called', () => {
@@ -163,12 +173,10 @@ describe('VideoRenderer', () => {
 
     });
 
-    xit('should change video volume when setVolume is called', () => {
-
-    });
-
-    xit('should enter full screen mode when requestFullscreen action is called', () => {
-
+    it('should change video volume when setVolume is called', () => {
+      const {component} = setup({children});
+      videoActions.setVolume(0.1);
+      expect(component.state().volume).toEqual(0.1);
     });
   });
 });
