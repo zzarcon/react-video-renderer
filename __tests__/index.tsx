@@ -6,9 +6,9 @@ import Video, {VideoProps, RenderCallback, VideoActions, VideoState} from '../sr
 describe('VideoRenderer', () => {
   const setup = (props?: Partial<VideoProps>) => {
     const src = 'video-url';
-    const children = (props && props.children) || jest.fn().mockImplementation((video) => {
+    const children = ((props && props.children) || jest.fn().mockImplementation((video) => {
       return video;
-    });
+    })) as jest.Mock<any>;
     const component = mount((
       <Video src={src} {...props}>
         {children}
@@ -91,6 +91,7 @@ describe('VideoRenderer', () => {
         currentTime: 1,
         volume: 0.5,
         status: 'paused',
+        isMuted: false,
         duration: 25,
         buffered: 0
       });
@@ -107,8 +108,9 @@ describe('VideoRenderer', () => {
 
       expect(children.mock.calls[1][1]).toEqual({
         currentTime: 1,
-        volume: 0,
+        volume: 1,
         status: 'paused',
+        isMuted: false,
         duration: 0,
         buffered: 0
       });
@@ -126,7 +128,8 @@ describe('VideoRenderer', () => {
         volume: 10,
         status: 'paused',
         duration: 0,
-        buffered: 0
+        buffered: 0,
+        isMuted: false
       });
     });
 
@@ -139,7 +142,8 @@ describe('VideoRenderer', () => {
       });
       expect(children.mock.calls[1][1]).toEqual({
         currentTime: 0,
-        volume: 0,
+        volume: 1,
+        isMuted: false,
         status: 'paused',
         duration: 10,
         buffered: 0
@@ -156,6 +160,42 @@ describe('VideoRenderer', () => {
       component.find('video').simulate('error');
 
       expect(component.state('status')).toEqual('errored');
+    });
+
+    it('should return right value for isMuted state', () => {
+      const {component, children} = setup();
+
+      component.find('video').simulate('canPlay', {
+        target: {
+          currentTime: 1,
+          volume: 0,
+          duration: 2
+        }
+      });
+
+      expect(children.mock.calls[1][1]).toEqual({
+        currentTime: 1,
+        volume: 0,
+        isMuted: true,
+        status: 'paused',
+        duration: 2,
+        buffered: 0
+      });
+
+      component.find('video').simulate('volumeChange', {
+        target: {
+          volume: 0.1
+        }
+      });
+
+      expect(children.mock.calls[2][1]).toEqual({
+        currentTime: 1,
+        volume: 0.1,
+        isMuted: false,
+        status: 'paused',
+        duration: 2,
+        buffered: 0
+      });
     });
   });
 
