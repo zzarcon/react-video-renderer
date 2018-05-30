@@ -1,6 +1,6 @@
 {
   "name": "react-video-renderer",
-  "version": "0.0.6",
+  "version": "1.0.0",
   "main": "dist/index.js",
   "repository": "git@github.com:zzarcon/react-video-renderer.git",
   "author": "Hector Leon Zarco Garcia <hezarco@gmail.com>",
