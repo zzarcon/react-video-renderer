@@ -21,6 +21,7 @@ export interface AppState {
 const hdVideoSrc = 'http://vjs.zencdn.net/v/oceans.mp4';
 // const sdVideoSrc = 'http://www.onirikal.com/videos/mp4/battle_games.mp4';
 const sdVideoSrc = 'http://vjs.zencdn.net/v/oceans.webm';
+const errorVideoSrc = 'http://zzarcon';
 const sources = [
   {
     label: 'hd',

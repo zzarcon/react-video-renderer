@@ -201,6 +201,10 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     });
   }
 
+  onError = (e) => {
+
+  }
+
   render() {
     const {videoState, actions} = this;
     const {src, children, autoPlay, controls, preload} = this.props;
@@ -218,6 +222,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
         onTimeUpdate={this.onTimeUpdate}
         onCanPlay={this.onCanPlay}
         onDurationChange={this.onDurationChange}
+        onError={this.onError}
       />,
       videoState,
       actions      
