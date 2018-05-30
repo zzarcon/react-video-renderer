@@ -13,11 +13,14 @@ export interface VideoState {
   // isMutted: boolean; // TODO: implement
 }
 
+export type NavigateFunction = (time: number) => void;
+export type SetVolumeFunction = (volume: number) => void;
+
 export interface VideoActions {
   play: () => void;
   pause: () => void;
-  navigate: (time: number) => void;
-  setVolume: (volume: number) => void;
+  navigate: NavigateFunction;
+  setVolume: SetVolumeFunction;
   requestFullscreen: () => void;
   mute: () => void;
   unmute: () => void;
