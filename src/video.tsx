@@ -2,7 +2,7 @@ import * as React from 'react';
 import {Component, ReactNode} from 'react';
 import {requestFullScreen} from './utils';
 
-export type VideoStatus = 'playing' | 'paused' | 'errored';
+export type VideoStatus = 'loading' | 'playing' | 'paused' | 'errored';
 
 export interface VideoState {
   status: VideoStatus;
@@ -10,7 +10,7 @@ export interface VideoState {
   volume: number;
   duration: number;
   buffered: number;
-  // isMutted: boolean; // TODO: implement
+  isMuted: boolean;
 }
 
 export type NavigateFunction = (time: number) => void;
@@ -42,7 +42,18 @@ export interface VideoComponentState {
   status: VideoStatus;
   duration: number;
   buffered: number;
+  isMuted: boolean;
 }
+
+const getVolumeFromVideo = (video: HTMLVideoElement): {volume: number, isMuted: boolean} => {
+  const volume = video.volume;
+  const isMuted = volume === 0;
+
+  return {
+    volume,
+    isMuted
+  };
+};
 
 export class Video extends Component<VideoProps, VideoComponentState> {
   videoElement: HTMLVideoElement;
@@ -50,9 +61,10 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   state: VideoComponentState = {
     buffered: 0,
     currentTime: 0,
-    volume: 0,
+    volume: 1,
     status: 'paused',
-    duration: 0
+    duration: 0,
+    isMuted: false
   }
 
   static defaultProps: Partial<VideoProps> = {
@@ -78,10 +90,12 @@ export class Video extends Component<VideoProps, VideoComponentState> {
 
   onVolumeChange = (e: any) => {
     const video = e.target as HTMLVideoElement;
+    const {volume, isMuted} = getVolumeFromVideo(video);
     
     this.setState({
-      volume: video.volume
-    })
+      volume,
+      isMuted
+    });
   }
 
   onTimeUpdate = (e: any) => {
@@ -100,15 +114,17 @@ export class Video extends Component<VideoProps, VideoComponentState> {
 
   onCanPlay = (e: any) => {
     const video = e.target as HTMLVideoElement;
-    
+    const {volume, isMuted} = getVolumeFromVideo(video);
+
     this.setState({
+      volume,
+      isMuted,
       currentTime: video.currentTime,
-      volume: video.volume,
       duration: video.duration
     });
   }
 
-  onPlay = (e: any) => {
+  onPlay = () => {
     this.setState({
       status: 'playing'
     });
@@ -123,14 +139,15 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   } 
 
   get videoState(): VideoState {
-    const {currentTime, volume, status, duration, buffered} = this.state;
+    const {currentTime, volume, status, duration, buffered, isMuted} = this.state;
 
     return {
       currentTime,
       volume,
       status,
       duration,
-      buffered
+      buffered,
+      isMuted
     };
   }
 

@@ -12,14 +12,7 @@ injectGlobal`
 `;
 
 export const AppWrapper = styled.div`
-  text-align: center;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 100%;
-  overflow: hidden;
-  background: black;
-  height: calc(100% - 100px);
+  
 `;
 
 export const Timebar = styled.progress`
@@ -34,10 +27,10 @@ export const TimebarWrapper = styled.div`
 `;
 
 export interface VolumeWrapperProps {
-  isMutted: boolean;
+  isMuted: boolean;
 }
 
-export const MuttedIndicator = styled.div`
+export const MutedIndicator = styled.div`
   width: 29px;
   height: 2px;
   position: absolute;
@@ -48,7 +41,7 @@ export const MuttedIndicator = styled.div`
   opacity: 0;
   pointer-events: none;
 
-  ${(props: VolumeWrapperProps) => props.isMutted ? `
+  ${(props: VolumeWrapperProps) => props.isMuted ? `
     opacity: 1;
   ` : ''}
 `;
@@ -172,3 +165,22 @@ export const ErrorWrapper = styled.div`
   transform: translate(-50%, -50%);
   font-size: 25px;
 `
+
+export const SelectWrapper = styled.div`
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+`;
+
+export const VideoRendererWrapper = styled.div`
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  overflow: hidden;
+  background: black;
+  height: calc(100% - 135px);
+  margin-top: 17px;
+`;
