@@ -3,7 +3,7 @@ import {Component, ReactNode} from 'react';
 import {requestFullScreen} from './utils';
 
 export type VideoStatus = 'loading' | 'playing' | 'paused' | 'errored';
-
+export type VideoError = MediaError | null;
 export interface VideoState {
   status: VideoStatus;
   currentTime: number;
@@ -11,6 +11,7 @@ export interface VideoState {
   duration: number;
   buffered: number;
   isMuted: boolean;
+  error?: VideoError;
 }
 
 export type NavigateFunction = (time: number) => void;
@@ -43,6 +44,7 @@ export interface VideoComponentState {
   duration: number;
   buffered: number;
   isMuted: boolean;
+  error?: VideoError;
 }
 
 const getVolumeFromVideo = (video: HTMLVideoElement): {volume: number, isMuted: boolean} => {
@@ -57,6 +59,7 @@ const getVolumeFromVideo = (video: HTMLVideoElement): {volume: number, isMuted: 
 
 export class Video extends Component<VideoProps, VideoComponentState> {
   videoElement: HTMLVideoElement;
+  statusBeforeLoading?: VideoStatus;
 
   state: VideoComponentState = {
     buffered: 0,
@@ -121,11 +124,15 @@ export class Video extends Component<VideoProps, VideoComponentState> {
 
   onCanPlay = (e: any) => {
     const video = e.target as HTMLVideoElement;
+    const {status: currentStatus} = this.state;
+    const {statusBeforeLoading} = this;
+    const status = currentStatus === 'loading' && statusBeforeLoading ? statusBeforeLoading : currentStatus;
     const {volume, isMuted} = getVolumeFromVideo(video);
 
     this.setState({
       volume,
       isMuted,
+      status,
       currentTime: video.currentTime,
       duration: video.duration
     });
@@ -146,7 +153,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   } 
 
   get videoState(): VideoState {
-    const {currentTime, volume, status, duration, buffered, isMuted} = this.state;
+    const {currentTime, volume, status, duration, buffered, isMuted, error} = this.state;
 
     return {
       currentTime,
@@ -154,7 +161,8 @@ export class Video extends Component<VideoProps, VideoComponentState> {
       status,
       duration,
       buffered,
-      isMuted
+      isMuted,
+      error
     };
   }
 
@@ -228,9 +236,20 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     });
   }
 
-  onError = () => {
+  onError = (e: any) => {
+    const video = e.target as HTMLVideoElement;
+    
     this.setState({
-      status: 'errored'
+      status: 'errored',
+      error: video.error
+    });
+  }
+
+  onWaiting = () => {
+    const {status} = this.state;
+    this.statusBeforeLoading = status;
+    this.setState({
+      status: 'loading'
     });
   }
 
@@ -252,6 +271,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
         onCanPlay={this.onCanPlay}
         onDurationChange={this.onDurationChange}
         onError={this.onError}
+        onWaiting={this.onWaiting}
       />,
       videoState,
       actions      

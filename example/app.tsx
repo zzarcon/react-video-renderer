@@ -6,8 +6,24 @@ import VidFullScreenOnIcon from '@atlaskit/icon/glyph/vid-full-screen-on';
 import VolumeIcon from '@atlaskit/icon/glyph/hipchat/outgoing-sound';
 import Button from '@atlaskit/button';
 import Select from '@atlaskit/single-select';
+import Spinner from '@atlaskit/spinner';
 import Video from '../src';
-import {VideoRendererWrapper, SelectWrapper, ErrorWrapper, VideoWrapper, MutedIndicator, LeftControls, RightControls, ControlsWrapper, TimeRangeWrapper, CurrentTime, AppWrapper, TimebarWrapper, Timebar, VolumeWrapper, TimeWrapper, BufferedProgress} from './styled';
+import {
+  VideoRendererWrapper,
+  SelectWrapper,
+  ErrorWrapper,
+  VideoWrapper,
+  MutedIndicator,
+  LeftControls,
+  RightControls,
+  ControlsWrapper,
+  TimeRangeWrapper,
+  CurrentTime,
+  AppWrapper,
+  TimebarWrapper,
+  VolumeWrapper,
+  SpinnerWrapper
+} from './styled';
 import {TimeRange} from './timeRange';
 
 export interface VideoSource {
@@ -62,6 +78,14 @@ export default class App extends Component <{}, AppState> {
     });
   }
 
+  renderSpinner = () => {
+    return (
+      <SpinnerWrapper>
+        <Spinner size="xlarge" />
+      </SpinnerWrapper>
+    );
+  }
+
   render() {
     const {currentSource} = this.state;
 
@@ -78,7 +102,8 @@ export default class App extends Component <{}, AppState> {
         <VideoRendererWrapper>
           <Video src={currentSource.value} >
             {(video, videoState, actions) => {
-              if (videoState.status === 'errored') {
+              const {status} = videoState;
+              if (status === 'errored') {
                 return (
                   <ErrorWrapper>
                     Error
@@ -86,7 +111,7 @@ export default class App extends Component <{}, AppState> {
                 );
               }
 
-              const button = videoState.status === 'playing' ? (
+              const button = status === 'playing' ? (
                 <Button iconBefore={<VidPauseIcon label="play" />} onClick={actions.pause} />
               ) : (
                 <Button iconBefore={<VidPlayIcon label="pause" />} onClick={actions.play} />
@@ -99,6 +124,7 @@ export default class App extends Component <{}, AppState> {
 
               return (
                 <VideoWrapper>
+                  {status === 'loading' && this.renderSpinner()}
                   {video}
                   <TimebarWrapper>
                     <TimeRangeWrapper>
