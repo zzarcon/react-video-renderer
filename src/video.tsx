@@ -67,6 +67,13 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     isMuted: false
   }
 
+  constructor(props: VideoProps) {
+    super(props);
+
+    // Initializing with an empty element to make TS happy
+    this.videoElement = document.createElement('video');
+  }
+
   static defaultProps: Partial<VideoProps> = {
     autoPlay: false,
     controls: false,
