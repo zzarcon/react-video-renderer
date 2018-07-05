@@ -76,7 +76,20 @@ describe('VideoRenderer', () => {
   });
 
   describe('state', () => {
-    it('should return initial state when video is ready to play', () => {
+    it('should return initial state', () => {
+      const {component, children} = setup();
+      expect(children.mock.calls[0][1]).toEqual({
+        currentTime: 0,
+        volume: 1,
+        status: 'paused',
+        isMuted: false,
+        isLoading: true,
+        duration: 0,
+        buffered: 0
+      });
+    });
+
+    it('should return correct state when video is ready to play', () => {
       const {component, children} = setup();
 
       component.find('video').simulate('canPlay', {
@@ -92,6 +105,7 @@ describe('VideoRenderer', () => {
         volume: 0.5,
         status: 'paused',
         isMuted: false,
+        isLoading: false,
         duration: 25,
         buffered: 0
       });
@@ -111,6 +125,7 @@ describe('VideoRenderer', () => {
         volume: 1,
         status: 'paused',
         isMuted: false,
+        isLoading: true,
         duration: 0,
         buffered: 0
       });
@@ -129,7 +144,8 @@ describe('VideoRenderer', () => {
         status: 'paused',
         duration: 0,
         buffered: 0,
-        isMuted: false
+        isMuted: false,
+        isLoading: true
       });
     });
 
@@ -144,6 +160,7 @@ describe('VideoRenderer', () => {
         currentTime: 0,
         volume: 1,
         isMuted: false,
+        isLoading: true,
         status: 'paused',
         duration: 10,
         buffered: 0
@@ -160,6 +177,7 @@ describe('VideoRenderer', () => {
       component.find('video').simulate('error');
 
       expect(component.state('status')).toEqual('errored');
+      expect(component.state('isLoading')).toEqual(false);
     });
 
     it('should return right value for isMuted state', () => {
@@ -177,6 +195,7 @@ describe('VideoRenderer', () => {
         currentTime: 1,
         volume: 0,
         isMuted: true,
+        isLoading: false,
         status: 'paused',
         duration: 2,
         buffered: 0
@@ -192,6 +211,7 @@ describe('VideoRenderer', () => {
         currentTime: 1,
         volume: 0.1,
         isMuted: false,
+        isLoading: false,
         status: 'paused',
         duration: 2,
         buffered: 0

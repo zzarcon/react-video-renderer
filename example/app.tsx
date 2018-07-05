@@ -124,7 +124,7 @@ export default class App extends Component <{}, AppState> {
 
               return (
                 <VideoWrapper>
-                  {status === 'loading' && this.renderSpinner()}
+                  {videoState.isLoading && this.renderSpinner()}
                   {video}
                   <TimebarWrapper>
                     <TimeRangeWrapper>
