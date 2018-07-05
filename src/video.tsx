@@ -59,7 +59,7 @@ const getVolumeFromVideo = (video: HTMLVideoElement): {volume: number, isMuted: 
 
 export class Video extends Component<VideoProps, VideoComponentState> {
   videoElement: HTMLVideoElement;
-  statusBeforeLoading?: VideoStatus;
+  statusBeforeLoading: 'playing' | 'paused';
 
   state: VideoComponentState = {
     buffered: 0,
@@ -73,8 +73,10 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   constructor(props: VideoProps) {
     super(props);
 
+    const {autoPlay} = props;
     // Initializing with an empty element to make TS happy
     this.videoElement = document.createElement('video');
+    this.statusBeforeLoading = autoPlay ? 'playing' : 'paused';
   }
 
   static defaultProps: Partial<VideoProps> = {
@@ -126,7 +128,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     const video = e.target as HTMLVideoElement;
     const {status: currentStatus} = this.state;
     const {statusBeforeLoading} = this;
-    const status = currentStatus === 'loading' && statusBeforeLoading ? statusBeforeLoading : currentStatus;
+    const status = currentStatus === 'loading' ? statusBeforeLoading : currentStatus;
     const {volume, isMuted} = getVolumeFromVideo(video);
 
     this.setState({
@@ -247,7 +249,11 @@ export class Video extends Component<VideoProps, VideoComponentState> {
 
   onWaiting = () => {
     const {status} = this.state;
-    this.statusBeforeLoading = status;
+    
+    if (status === 'paused' || status === 'playing') {
+      this.statusBeforeLoading = status;
+    }
+
     this.setState({
       status: 'loading'
     });
