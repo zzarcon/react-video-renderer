@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { ReactNode } from 'react';
-import {shallow, mount} from 'enzyme';
+import {shallow, mount, ReactWrapper} from 'enzyme';
 import Video, {VideoProps, RenderCallback, VideoActions, VideoState} from '../src';
 
 describe('VideoRenderer', () => {
@@ -20,6 +20,12 @@ describe('VideoRenderer', () => {
       children
     };
   };
+
+  const simulate = (component: ReactWrapper, event: string, target: any = {}) => {
+    component.find('video').simulate(event, {
+      target
+    });
+  }
 
   describe('video element', () => {
     it('should create a video element with the right properties', () => {
@@ -54,13 +60,11 @@ describe('VideoRenderer', () => {
       instance.play = jest.fn();
       instance.navigate = jest.fn();
 
-      component.find('video').simulate('timeUpdate', {
-        target: {
-          currentTime: 10,
-          buffered: {}
-        }
+      simulate(component, 'timeUpdate', {
+        currentTime: 10,
+        buffered: {}
       });
-      component.find('video').simulate('play');
+      simulate(component, 'play');
       component.setProps({
         src: 'new-src'
       });
@@ -76,15 +80,26 @@ describe('VideoRenderer', () => {
   });
 
   describe('state', () => {
-    it('should return initial state when video is ready to play', () => {
+    it('should return initial state', () => {
+      const {children} = setup();
+      expect(children.mock.calls[0][1]).toEqual({
+        currentTime: 0,
+        volume: 1,
+        status: 'paused',
+        isMuted: false,
+        isLoading: true,
+        duration: 0,
+        buffered: 0
+      });
+    });
+
+    it('should return correct state when video is ready to play', () => {
       const {component, children} = setup();
 
-      component.find('video').simulate('canPlay', {
-        target: {
-          currentTime: 1,
-          volume: 0.5,
-          duration: 25
-        }
+      simulate(component, 'canPlay', {
+        currentTime: 1,
+        volume: 0.5,
+        duration: 25
       });
 
       expect(children.mock.calls[1][1]).toEqual({
@@ -92,6 +107,7 @@ describe('VideoRenderer', () => {
         volume: 0.5,
         status: 'paused',
         isMuted: false,
+        isLoading: false,
         duration: 25,
         buffered: 0
       });
@@ -99,11 +115,9 @@ describe('VideoRenderer', () => {
 
     it('should return the current time whenever time changes', () => {
       const {component, children} = setup();
-      component.find('video').simulate('timeUpdate', {
-        target: {
-          currentTime: 1,
-          buffered: {}
-        }
+      simulate(component, 'timeUpdate', {
+        currentTime: 1,
+        buffered: {}
       });
 
       expect(children.mock.calls[1][1]).toEqual({
@@ -111,6 +125,7 @@ describe('VideoRenderer', () => {
         volume: 1,
         status: 'paused',
         isMuted: false,
+        isLoading: true,
         duration: 0,
         buffered: 0
       });
@@ -118,10 +133,8 @@ describe('VideoRenderer', () => {
 
     it('should return volume value on change', () => {
       const {component, children} = setup();
-      component.find('video').simulate('volumeChange', {
-        target: {
-          volume: 10
-        }
+      simulate(component, 'volumeChange', {
+        volume: 10
       });
       expect(children.mock.calls[1][1]).toEqual({
         currentTime: 0,
@@ -129,21 +142,21 @@ describe('VideoRenderer', () => {
         status: 'paused',
         duration: 0,
         buffered: 0,
-        isMuted: false
+        isMuted: false,
+        isLoading: true
       });
     });
 
     it('should reset duration when video duration changes', () => {
       const {component, children} = setup();
-      component.find('video').simulate('durationChange', {
-        target: {
-          duration: 10
-        }
+      simulate(component, 'durationChange', {
+        duration: 10
       });
       expect(children.mock.calls[1][1]).toEqual({
         currentTime: 0,
         volume: 1,
         isMuted: false,
+        isLoading: true,
         status: 'paused',
         duration: 10,
         buffered: 0
@@ -157,45 +170,53 @@ describe('VideoRenderer', () => {
     it('should return error status when the video is errored', () => {
       const {component, children} = setup();
 
-      component.find('video').simulate('error');
+      simulate(component, 'error');
 
       expect(component.state('status')).toEqual('errored');
+      expect(component.state('isLoading')).toEqual(false);
     });
 
     it('should return right value for isMuted state', () => {
       const {component, children} = setup();
 
-      component.find('video').simulate('canPlay', {
-        target: {
-          currentTime: 1,
-          volume: 0,
-          duration: 2
-        }
+      simulate(component, 'canPlay', {
+        currentTime: 1,
+        volume: 0,
+        duration: 2
       });
 
       expect(children.mock.calls[1][1]).toEqual({
         currentTime: 1,
         volume: 0,
         isMuted: true,
+        isLoading: false,
         status: 'paused',
         duration: 2,
         buffered: 0
       });
 
-      component.find('video').simulate('volumeChange', {
-        target: {
-          volume: 0.1
-        }
+      simulate(component, 'volumeChange', {
+        volume: 0.1
       });
 
       expect(children.mock.calls[2][1]).toEqual({
         currentTime: 1,
         volume: 0.1,
         isMuted: false,
+        isLoading: false,
         status: 'paused',
         duration: 2,
         buffered: 0
       });
+    });
+
+    it('should set loading state when video is waiting', () => {
+      const {component, children} = setup();
+
+      simulate(component, 'waiting');
+      expect(children.mock.calls[1][1].isLoading).toBeTruthy();
+      simulate(component, 'canPlay');
+      expect(children.mock.calls[2][1].isLoading).toBeFalsy();
     });
   });
 
