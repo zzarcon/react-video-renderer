@@ -102,7 +102,7 @@ export default class App extends Component <{}, AppState> {
         <VideoRendererWrapper>
           <Video src={currentSource.value} >
             {(video, videoState, actions) => {
-              const {status} = videoState;
+              const {status, currentTime, buffered, duration, volume, isLoading} = videoState;
               if (status === 'errored') {
                 return (
                   <ErrorWrapper>
@@ -124,14 +124,14 @@ export default class App extends Component <{}, AppState> {
 
               return (
                 <VideoWrapper>
-                  {videoState.isLoading && this.renderSpinner()}
+                  {isLoading && this.renderSpinner()}
                   {video}
                   <TimebarWrapper>
                     <TimeRangeWrapper>
                       <TimeRange
-                        currentTime={videoState.currentTime}
-                        bufferedTime={videoState.buffered}
-                        duration={videoState.duration}
+                        currentTime={currentTime}
+                        bufferedTime={buffered}
+                        duration={duration}
                         onChange={this.onTimeChange(actions.navigate)}
                       />
                     </TimeRangeWrapper>
@@ -139,12 +139,12 @@ export default class App extends Component <{}, AppState> {
                       <LeftControls>
                         {button}
                         <CurrentTime>
-                          {Math.round(videoState.currentTime)} / {Math.round(videoState.duration)}
+                          {Math.round(currentTime)} / {Math.round(duration)}
                         </CurrentTime>
                         <VolumeWrapper>
                           <MutedIndicator isMuted={videoState.isMuted} />
                           <Button onClick={actions.toggleMute} iconBefore={<VolumeIcon label="volume" />} />
-                          <input type="range" step={0.01} value={videoState.volume} max={1} onChange={this.onVolumeChange(actions.setVolume)} />
+                          <input type="range" step={0.01} value={volume} max={1} onChange={this.onVolumeChange(actions.setVolume)} />
                         </VolumeWrapper>  
                       </LeftControls>
                       <RightControls>
