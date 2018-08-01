@@ -8,19 +8,19 @@
 * Dependency free, [<2KB size](https://bundlephobia.com/result?p=react-video-renderer)
 * Cross-browser support, no more browser hacks.
 
-# Demo
+# Demo 🎩
 
 [https://zzarcon.github.io/react-video-renderer](https://zzarcon.github.io/react-video-renderer)
 
-# Installation
+# Installation 🚀
 
 ```
 $ yarn add react-video-renderer
 ```
 
-# Usage
+# Usage ⛏
 
-Simple demo on how to render the video state and communicate user interactions up when volume or time changes.
+> Render video state and communicate user interactions up when volume or time changes.
 
 ```jsx
 import Video from 'react-video-renderer';
@@ -45,7 +45,7 @@ import Video from 'react-video-renderer';
   <br><br>
 </div>
 
-# Api
+# Api 💅
 
 **props**
 
@@ -95,11 +95,13 @@ interface VideoActions {
 }
 ```
 
-# Error handling 
+# Error handling 💥
+
+> this is all you need to detect video errors 
 
 ```jsx
 <Video src="some-error-video.mov">
-  {(video, state, actions) => {
+  {(video, state) => {
     if (state.status === 'errored') {
       return (
         <ErrorWrapper>
@@ -117,6 +119,27 @@ interface VideoActions {
 </Video>
 ```
 
-# Author
+# Loading state ✨
 
-🧔 [@zzarcon](https://twitter.com/zzarcon)
+> you can still interact with the player regardless if the video is loading or not
+
+```jsx
+<Video src="me-video.mp4">
+  {(video, state, actions) => {
+    const loadingComponent = state.isLoading ? 'loading...' : undefined;
+
+    return (
+      <div>
+        {video}
+        {loadingComponent}
+        <button onClick={actions.play}>Play</button>
+        <button onClick={actions.pause}>Pause</button>
+      </div>
+    )
+  }}
+</Video>
+```
+
+# Author 🧔
+
+[@zzarcon](https://twitter.com/zzarcon)
