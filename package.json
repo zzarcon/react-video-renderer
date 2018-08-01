@@ -10,6 +10,7 @@
     "@atlaskit/icon": "^11.0.0",
     "@atlaskit/single-select": "^4.0.3",
     "@atlaskit/spinner": "^8.0.0",
+    "react-gh-corner": "^1.1.2",
     "ts-react-toolbox": "^0.0.46"
   },
   "engines": {
@@ -31,5 +32,16 @@
   "types": "dist/index.d.ts",
   "files": [
     "dist"
+  ],
+  "keywords": [
+    "react",
+    "video",
+    "renderer",
+    "render-props",
+    "props",
+    "actions",
+    "state",
+    "player",
+    "video-player"
   ]
 }

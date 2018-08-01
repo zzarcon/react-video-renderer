@@ -196,3 +196,17 @@ export const SpinnerWrapper = styled.div`
   align-items: center;
   justify-content: center;
 `;
+
+export const BuiltWithWrapper = styled.div`
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  font-size: 20px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 5px;
+  
+  a {
+    color: black;
+  }
+`;

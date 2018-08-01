@@ -7,6 +7,7 @@ import VolumeIcon from '@atlaskit/icon/glyph/hipchat/outgoing-sound';
 import Button from '@atlaskit/button';
 import Select from '@atlaskit/single-select';
 import Spinner from '@atlaskit/spinner';
+import Corner from 'react-gh-corner';
 import Video from '../src';
 import {
   VideoRendererWrapper,
@@ -22,7 +23,8 @@ import {
   AppWrapper,
   TimebarWrapper,
   VolumeWrapper,
-  SpinnerWrapper
+  SpinnerWrapper,
+  BuiltWithWrapper
 } from './styled';
 import {TimeRange} from './timeRange';
 
@@ -91,6 +93,13 @@ export default class App extends Component <{}, AppState> {
 
     return (
       <AppWrapper>
+        <BuiltWithWrapper>
+          Built with <a target="_blank" href="https://github.com/zzarcon/react-video-renderer">react-video-renderer</a> 🎥
+        </BuiltWithWrapper>
+        <Corner 
+          href="https://github.com/zzarcon/react-video-renderer"
+          size={100}
+        />
         <SelectWrapper>
           <Select
             label="Video src"

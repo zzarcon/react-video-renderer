@@ -4424,6 +4424,10 @@ react-dom@^16.2.0:
     object-assign "^4.1.1"
     prop-types "^15.6.0"
 
+react-gh-corner@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/react-gh-corner/-/react-gh-corner-1.1.2.tgz#f6b7ba9b83ab7f47f314d8e04fcdb529b5707a03"
+
 react-is@^16.3.1, react-is@^16.3.2:
   version "16.3.2"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.3.2.tgz#f4d3d0e2f5fbb6ac46450641eb2e25bf05d36b22"
