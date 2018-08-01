@@ -140,6 +140,6 @@ interface VideoActions {
 </Video>
 ```
 
-# Author 🧔
+# Author 🧔🏻
 
 [@zzarcon](https://twitter.com/zzarcon)
