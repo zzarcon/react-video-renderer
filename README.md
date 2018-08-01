@@ -1,11 +1,12 @@
 # react-video-renderer [![Build Status](https://travis-ci.org/zzarcon/react-video-renderer.svg?branch=master)](https://travis-ci.org/zzarcon/react-video-renderer)
-> Videos in React with render props
+> Build custom video players effortless
 
-* Build custom video players with ease.
+* Render props, get all video state passed down as props.
 * Bidirectional flow to render and update the video state in a declarative way.
 * No side effects out of the box, you just need to build the UI.
+* Actions handling: play, pause, mute, unmute, navigate, etc
 * Dependency free, [<2KB size](https://bundlephobia.com/result?p=react-video-renderer)
-* Cross-browser support, forget annoying browser specifiy hacks.
+* Cross-browser support, no more browser hacks.
 
 # Demo
 
@@ -25,7 +26,7 @@ Simple demo on how to render the video state and communicate user interactions u
 import Video from 'react-video-renderer';
 
 <Video src="https://mysite.com/video.mp4">
-  {(video, state, actions) => {
+  {(video, state, actions) => (
     <div>
       {video}
       <div>{state.currentTime} / {state.duration} / {state.buffered}</div>
@@ -35,7 +36,7 @@ import Video from 'react-video-renderer';
       <button onClick={actions.pause}>Pause</button>
       <button onClick={actions.requestFullScreen}>Fullscreen</button>
     </div>
-  }}
+  )}
 </Video>
 ```
 
@@ -67,27 +68,53 @@ type RenderCallback = (videoElement: ReactNode, state: VideoState, actions: Vide
 **state**
 
 ```typescript
-type VideoStatus = 'playing' | 'paused';
-
-interface State {
-  status: VideoStatus;
+interface VideoState {
+  status: 'playing' | 'paused' | 'errored';
   currentTime: number;
   volume: number;
   duration: number;
   buffered: number;
+  isMuted: boolean;
+  isLoading: boolean;
+  error?: MediaError | null;
 }
 ```
 
 **actions**
 
 ```typescript
-interface Actions {
+interface VideoActions {
   play: () => void;
   pause: () => void;
   navigate: (time: number) => void;
   setVolume: (volume: number) => void;
   requestFullscreen: () => void;
+  mute: () => void;
+  unmute: () => void;
+  toggleMute: () => void;
 }
+```
+
+# Error handling 
+
+```jsx
+<Video src="some-error-video.mov">
+  {(video, state, actions) => {
+    if (state.status === 'errored') {
+      return (
+        <ErrorWrapper>
+          Error
+        </ErrorWrapper>
+      );
+    }
+
+    return (
+      <div>
+        {video}
+      </div>
+    )
+  }}
+</Video>
 ```
 
 # Author
