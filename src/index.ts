@@ -1,2 +1,2 @@
-export {Video as default} from './video';
+export {AudioVideo as default} from './video';
 export * from './video';

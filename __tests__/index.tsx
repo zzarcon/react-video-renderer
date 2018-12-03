@@ -1,18 +1,18 @@
 import * as React from 'react';
 import { ReactNode } from 'react';
 import {shallow, mount, ReactWrapper} from 'enzyme';
-import Video, {VideoProps, RenderCallback, VideoActions, VideoState} from '../src';
+import AudioVideo, {ContentProps, ContentRenderCallback, ContentActions, ContentState} from '../src';
 
 describe('VideoRenderer', () => {
-  const setup = (props?: Partial<VideoProps>) => {
+  const setup = (props?: Partial<ContentProps>) => {
     const src = 'video-url';
     const children = ((props && props.children) || jest.fn().mockImplementation((video) => {
       return video;
     })) as jest.Mock<any>;
     const component = mount((
-      <Video src={src} {...props}>
+      <AudioVideo src={src} {...{...props, type: 'video'}}>
         {children}
-      </Video>
+      </AudioVideo>
     ));
 
     return {
@@ -55,7 +55,7 @@ describe('VideoRenderer', () => {
 
     it('should play new src at the current time when src changes and video is not paused', () => {
       const {component, children} = setup();
-      const instance = component.instance() as Video;
+      const instance = component.instance() as AudioVideo;
 
       instance.play = jest.fn();
       instance.navigate = jest.fn();
@@ -89,6 +89,39 @@ describe('VideoRenderer', () => {
         isMuted: false,
         isLoading: true,
         duration: 0,
+        buffered: 0
+      });
+    });
+
+    it('should return initial state for audio', () => {
+      const {children} = setup({type: 'audio'});
+      expect(children.mock.calls[0][1]).toEqual({
+        currentTime: 0,
+        volume: 1,
+        status: 'paused',
+        isMuted: false,
+        isLoading: true,
+        duration: 0,
+        buffered: 0
+      });
+    });
+
+    it('should return correct state when audio is ready to play', () => {
+      const {component, children} = setup({type: 'audio'});
+
+      simulate(component, 'canPlay', {
+        currentTime: 1,
+        volume: 0.5,
+        duration: 25
+      });
+
+      expect(children.mock.calls[1][1]).toEqual({
+        currentTime: 1,
+        volume: 0.5,
+        status: 'paused',
+        isMuted: false,
+        isLoading: false,
+        duration: 25,
         buffered: 0
       });
     });
@@ -131,8 +164,42 @@ describe('VideoRenderer', () => {
       });
     });
 
+    it('should return the current time whenever time changes for audio', () => {
+      const {component, children} = setup({type: 'audio'});
+      simulate(component, 'timeUpdate', {
+        currentTime: 1,
+        buffered: {}
+      });
+
+      expect(children.mock.calls[1][1]).toEqual({
+        currentTime: 1,
+        volume: 1,
+        status: 'paused',
+        isMuted: false,
+        isLoading: true,
+        duration: 0,
+        buffered: 0
+      });
+    });
+
     it('should return volume value on change', () => {
       const {component, children} = setup();
+      simulate(component, 'volumeChange', {
+        volume: 10
+      });
+      expect(children.mock.calls[1][1]).toEqual({
+        currentTime: 0,
+        volume: 10,
+        status: 'paused',
+        duration: 0,
+        buffered: 0,
+        isMuted: false,
+        isLoading: true
+      });
+    });
+
+    it('should return volume value on change for audio', () => {
+      const {component, children} = setup({type: 'audio'});
       simulate(component, 'volumeChange', {
         volume: 10
       });
@@ -163,12 +230,37 @@ describe('VideoRenderer', () => {
       });
     });
 
+    it('should reset duration when audio duration changes', () => {
+      const {component, children} = setup({type: 'audio'});
+      simulate(component, 'durationChange', {
+        duration: 10
+      });
+      expect(children.mock.calls[1][1]).toEqual({
+        currentTime: 0,
+        volume: 1,
+        isMuted: false,
+        isLoading: true,
+        status: 'paused',
+        duration: 10,
+        buffered: 0
+      });
+    });
+
     xit('should return the buffered value', () => {
       // TODO: fake multiple ranges
     });
 
     it('should return error status when the video is errored', () => {
       const {component, children} = setup();
+
+      simulate(component, 'error');
+
+      expect(component.state('status')).toEqual('errored');
+      expect(component.state('isLoading')).toEqual(false);
+    });
+
+    it('should return error status when the audio is errored', () => {
+      const {component, children} = setup({type: 'audio'});
 
       simulate(component, 'error');
 
@@ -210,8 +302,51 @@ describe('VideoRenderer', () => {
       });
     });
 
+    it('should return right value for isMuted state for audio', () => {
+      const {component, children} = setup({type: 'audio'});
+
+      simulate(component, 'canPlay', {
+        currentTime: 1,
+        volume: 0,
+        duration: 2
+      });
+
+      expect(children.mock.calls[1][1]).toEqual({
+        currentTime: 1,
+        volume: 0,
+        isMuted: true,
+        isLoading: false,
+        status: 'paused',
+        duration: 2,
+        buffered: 0
+      });
+
+      simulate(component, 'volumeChange', {
+        volume: 0.1
+      });
+
+      expect(children.mock.calls[2][1]).toEqual({
+        currentTime: 1,
+        volume: 0.1,
+        isMuted: false,
+        isLoading: false,
+        status: 'paused',
+        duration: 2,
+        buffered: 0
+      });
+    });
+
     it('should set loading state when video is waiting', () => {
       const {component, children} = setup();
+
+      simulate(component, 'waiting');
+      expect(children.mock.calls[1][1].isLoading).toBeTruthy();
+      simulate(component, 'canPlay');
+      expect(children.mock.calls[2][1].isLoading).toBeFalsy();
+    });
+
+    it('should set loading state when audio is waiting', () => {
+      const {component, children} = setup({type: 'audio'});
 
       simulate(component, 'waiting');
       expect(children.mock.calls[1][1].isLoading).toBeTruthy();
@@ -222,14 +357,20 @@ describe('VideoRenderer', () => {
 
   describe('actions', () => {
 
-    let videoActions: VideoActions;
-    const children: RenderCallback = (videoElement: ReactNode, state: VideoState, actions: VideoActions) => {
+    let videoActions: ContentActions;
+    const children: ContentRenderCallback = (videoElement: ReactNode, state: ContentState, actions: ContentActions) => {
       videoActions = actions;
       return videoElement;
     };
 
     it('should set video current time to passed time when navigate is called', () => {
       const {component} = setup({children});
+      videoActions.navigate(10);
+      expect(component.state().currentTime).toEqual(10);
+    });
+
+    it('should set audio current time to passed time when navigate is called', () => {
+      const {component} = setup({type: 'audio', children});
       videoActions.navigate(10);
       expect(component.state().currentTime).toEqual(10);
     });
@@ -247,5 +388,59 @@ describe('VideoRenderer', () => {
       videoActions.setVolume(0.1);
       expect(component.state().volume).toEqual(0.1);
     });
+
+    it('should change audio volume when setVolume is called', () => {
+      const {component} = setup({type: 'audio', children});
+      videoActions.setVolume(0.1);
+      expect(component.state().volume).toEqual(0.1);
+    });
   });
+
+  describe('as audio element', () => {
+    it('should create an audio element with the right properties', () => {
+      const {children: defaultChildren} = setup({type: 'audio'});
+
+      expect(defaultChildren.mock.calls[0][0].props).toEqual(expect.objectContaining({
+        src: 'video-url',
+        preload: 'metadata',
+        autoPlay: false,
+        controls: false
+      }));
+
+      const {children: customChildren} = setup({
+        src: 'some-src',
+        preload: 'none',
+        autoPlay: true,
+        controls: true
+      });
+
+      expect(customChildren.mock.calls[0][0].props).toEqual(expect.objectContaining({
+        src: 'some-src',
+        preload: 'none',
+        autoPlay: true,
+        controls: true
+      }));
+    });
+
+    it('should play new src at the current time when src changes and video is not paused', () => {
+      const {component, children} = setup({type: 'audio'});
+      const instance = component.instance() as AudioVideo;
+
+      instance.play = jest.fn();
+      instance.navigate = jest.fn();
+
+      simulate(component, 'timeUpdate', {
+        currentTime: 10,
+        buffered: {}
+      });
+      simulate(component, 'play');
+      component.setProps({
+        src: 'new-src'
+      });
+      expect(instance.play).toHaveBeenCalledTimes(1);
+      expect(instance.navigate).toBeCalledWith(10);
+      expect(component.prop('src')).toEqual('new-src');
+      expect(component.state('currentTime')).toEqual(10);
+    });
+  })
 });
