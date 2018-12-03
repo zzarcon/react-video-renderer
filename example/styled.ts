@@ -53,7 +53,8 @@ export const VolumeWrapper = styled.div`
   position: relative;
   width: 35px;
   overflow: hidden;
-  transition: width .3s;
+  transition: width .3s ease-out; 
+  transition-delay: 1s;
 
   input {
     margin-left: 20px;
@@ -61,6 +62,11 @@ export const VolumeWrapper = styled.div`
 
   &:hover {
     width: 165px;
+    transition: width .3s
+  }
+  &:active {
+    width: 165px;
+    transition: width .3s
   }
 `;
 
