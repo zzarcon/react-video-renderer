@@ -50,7 +50,7 @@ export interface VideoComponentState {
   error?: VideoError;
 }
 
-const getVolumeFromVideo = (video: HTMLVideoElement | HTMLAudioElement): {volume: number, isMuted: boolean} => {
+const getVolumeFromVideo = (video: SourceElement): {volume: number, isMuted: boolean} => {
   const volume = video.volume;
   const isMuted = volume === 0;
 
@@ -60,6 +60,7 @@ const getVolumeFromVideo = (video: HTMLVideoElement | HTMLAudioElement): {volume
   };
 };
 
+type SourceElement = HTMLVideoElement | HTMLAudioElement
 const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 export class Video extends Component<VideoProps, VideoComponentState> {
@@ -106,7 +107,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   onVolumeChange = (e: any) => {
-    const video = e.target as HTMLVideoElement | HTMLAudioElement;
+    const video = e.target as SourceElement;
     const {volume, isMuted} = getVolumeFromVideo(video);
     
     this.setState({
@@ -116,7 +117,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   onTimeUpdate = (e: any) => {
-    const video = e.target as HTMLVideoElement | HTMLAudioElement;
+    const video = e.target as SourceElement;
 
     this.setState({
       currentTime: video.currentTime
@@ -130,7 +131,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   onCanPlay = (e: any) => {
-    const video = e.target as HTMLVideoElement | HTMLAudioElement;
+    const video = e.target as SourceElement;
     const {volume, isMuted} = getVolumeFromVideo(video);
 
     this.setState({
@@ -148,9 +149,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     });
   }
 
-  onPause = (e: any) => {
-    const video = e.target as HTMLVideoElement | HTMLAudioElement;
-    
+  onPause = (e: any) => {    
     this.setState({
       status: 'paused'
     });
@@ -230,14 +229,14 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     };
   }
 
-  savePlayableMediaRef = (element: HTMLVideoElement | HTMLAudioElement) => {
+  savePlayableMediaRef = (element: any) => {
     if (!element) {return;}
 
     this.videoElement = element;
   }
 
   onDurationChange = (e: any) => {
-    const video = e.target as HTMLVideoElement | HTMLAudioElement;
+    const video = e.target as SourceElement;
     
     this.setState({
       duration: video.duration
@@ -245,7 +244,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   onError = (e: any) => {
-    const video = e.target as HTMLVideoElement | HTMLAudioElement;
+    const video = e.target as SourceElement;
     
     this.setState({
       isLoading: false,
@@ -261,7 +260,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   render() {
     const {videoState, actions} = this;
     const {sourceType, src, children, autoPlay, controls, preload} = this.props;
-    const TagName = sourceType as 'video' | 'audio'; // otherwise ts complains about not being able to create React component from TagName
+    const TagName = sourceType || 'video'; // otherwise ts complains about not being able to create React component from TagName
 
     return children(
       <TagName
