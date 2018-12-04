@@ -1,6 +1,14 @@
 {
   "compilerOptions": {
     "strict": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
     "removeComments": true,
     "target": "es5",
@@ -16,6 +24,6 @@
     "jsx": "react"
   },
   "files": [
-    "./typings/atlaskit.d.ts"
+    "./custom-typings/atlaskit.d.ts"
   ]
 }

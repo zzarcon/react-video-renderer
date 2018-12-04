@@ -1,7 +1,10 @@
 {
   "name": "react-video-renderer",
   "version": "2.2.1",
-  "main": "dist/index.js",
+  "main": "dist/es5/index.js",
+  "jsnext:main": "dist/es2015/index.js",
+  "module": "dist/es2015/index.js",
+  "types": "dist/es5/index.d.ts",
   "repository": "git@github.com:zzarcon/react-video-renderer.git",
   "author": "Hector Leon Zarco Garcia <hezarco@gmail.com>",
   "license": "MIT",
@@ -11,7 +14,7 @@
     "@atlaskit/single-select": "^4.0.3",
     "@atlaskit/spinner": "^8.0.0",
     "react-gh-corner": "^1.1.2",
-    "ts-react-toolbox": "^0.0.46"
+    "ts-react-toolbox": "^0.1.23"
   },
   "engines": {
     "node": ">=8.5.0"
@@ -24,12 +27,13 @@
     "build": "ts-react-toolbox build",
     "release": "ts-react-toolbox release",
     "lint": "ts-react-toolbox lint",
-    "static": "ts-react-toolbox publish"
+    "static": "ts-react-toolbox publish",
+    "format": "ts-react-toolbox format",
+    "analyze": "ts-react-toolbox analyze"
   },
   "peerDependencies": {
-    "react": "^16.2.0"
+    "react": "^16.3.0"
   },
-  "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
