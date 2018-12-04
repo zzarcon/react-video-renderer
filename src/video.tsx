@@ -31,6 +31,7 @@ export interface VideoActions {
 
 export type RenderCallback = (videoElement: ReactNode, state: VideoState, actions: VideoActions) => ReactNode;
 export interface VideoProps {
+  sourceType?: 'video' | 'audio';
   src: string;
   children: RenderCallback;
   controls?: boolean;
@@ -49,7 +50,7 @@ export interface VideoComponentState {
   error?: VideoError;
 }
 
-const getVolumeFromVideo = (video: HTMLVideoElement): {volume: number, isMuted: boolean} => {
+const getVolumeFromVideo = (video: SourceElement): {volume: number, isMuted: boolean} => {
   const volume = video.volume;
   const isMuted = volume === 0;
 
@@ -59,10 +60,11 @@ const getVolumeFromVideo = (video: HTMLVideoElement): {volume: number, isMuted: 
   };
 };
 
+type SourceElement = HTMLVideoElement | HTMLAudioElement
 const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 export class Video extends Component<VideoProps, VideoComponentState> {
-  videoElement: HTMLVideoElement;
+  videoElement: HTMLVideoElement | HTMLAudioElement;
 
   state: VideoComponentState = {
     isLoading: true,
@@ -76,12 +78,14 @@ export class Video extends Component<VideoProps, VideoComponentState> {
 
   constructor(props: VideoProps) {
     super(props);
+    const {sourceType} = props;
 
     // Initializing with an empty element to make TS happy
-    this.videoElement = document.createElement('video');
+    this.videoElement = document.createElement(sourceType || 'video');
   }
 
   static defaultProps: Partial<VideoProps> = {
+    sourceType: 'video',
     autoPlay: false,
     controls: false,
     preload: isSafari ? 'auto' : 'metadata'
@@ -103,7 +107,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   onVolumeChange = (e: any) => {
-    const video = e.target as HTMLVideoElement;
+    const video = e.target as SourceElement;
     const {volume, isMuted} = getVolumeFromVideo(video);
     
     this.setState({
@@ -113,7 +117,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   onTimeUpdate = (e: any) => {
-    const video = e.target as HTMLVideoElement;
+    const video = e.target as SourceElement;
 
     this.setState({
       currentTime: video.currentTime
@@ -127,7 +131,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   onCanPlay = (e: any) => {
-    const video = e.target as HTMLVideoElement;
+    const video = e.target as SourceElement;
     const {volume, isMuted} = getVolumeFromVideo(video);
 
     this.setState({
@@ -145,9 +149,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     });
   }
 
-  onPause = (e: any) => {
-    const video = e.target as HTMLVideoElement;
-    
+  onPause = (e: any) => {    
     this.setState({
       status: 'paused'
     });
@@ -187,7 +189,10 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   requestFullscreen = () => {
-    requestFullScreen(this.videoElement);
+    const {sourceType} = this.props;
+    if (sourceType === 'video') {
+      requestFullScreen(this.videoElement as HTMLVideoElement);
+    }
   }
 
   mute = () => {
@@ -224,14 +229,14 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     };
   }
 
-  saveVideoRef = (element: HTMLVideoElement) => {
+  savePlayableMediaRef = (element: any) => {
     if (!element) {return;}
 
     this.videoElement = element;
   }
 
   onDurationChange = (e: any) => {
-    const video = e.target as HTMLVideoElement;
+    const video = e.target as SourceElement;
     
     this.setState({
       duration: video.duration
@@ -239,7 +244,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   onError = (e: any) => {
-    const video = e.target as HTMLVideoElement;
+    const video = e.target as SourceElement;
     
     this.setState({
       isLoading: false,
@@ -254,11 +259,12 @@ export class Video extends Component<VideoProps, VideoComponentState> {
 
   render() {
     const {videoState, actions} = this;
-    const {src, children, autoPlay, controls, preload} = this.props;
+    const {sourceType, src, children, autoPlay, controls, preload} = this.props;
+    const TagName = sourceType || 'video'; // otherwise ts complains about not being able to create React component from TagName
 
     return children(
-      <video
-        ref={this.saveVideoRef}
+      <TagName
+        ref={this.savePlayableMediaRef}
         src={src}
         preload={preload}
         controls={controls}
