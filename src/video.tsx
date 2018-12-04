@@ -59,6 +59,8 @@ const getVolumeFromVideo = (video: HTMLVideoElement): {volume: number, isMuted: 
   };
 };
 
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
 export class Video extends Component<VideoProps, VideoComponentState> {
   videoElement: HTMLVideoElement;
 
@@ -82,7 +84,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   static defaultProps: Partial<VideoProps> = {
     autoPlay: false,
     controls: false,
-    preload: 'metadata'
+    preload: isSafari ? 'auto' : 'metadata'
   }
 
   componentDidUpdate(prevProps: VideoProps) {
