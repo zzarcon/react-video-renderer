@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Component, ReactNode, SyntheticEvent} from 'react';
+import {Component, ReactNode, SyntheticEvent, RefObject} from 'react';
 import {requestFullScreen} from './utils';
 
 export type VideoStatus = 'playing' | 'paused' | 'errored';
@@ -29,7 +29,7 @@ export interface VideoActions {
   toggleMute: () => void;
 }
 
-export type RenderCallback = (videoElement: ReactNode, state: VideoState, actions: VideoActions) => ReactNode;
+export type RenderCallback = (videoElement: ReactNode, state: VideoState, actions: VideoActions, ref: RefObject<SourceElement>) => ReactNode;
 export interface VideoProps {
   src: string;
   children: RenderCallback;
@@ -64,8 +64,8 @@ export type SourceElement = HTMLVideoElement | HTMLAudioElement;
 const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 export class Video extends Component<VideoProps, VideoComponentState> {
-  videoElement: HTMLVideoElement | HTMLAudioElement;
   previousVolume: number;
+  mediaRef: RefObject<SourceElement>;
 
   state: VideoComponentState = {
     isLoading: true,
@@ -79,10 +79,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
 
   constructor(props: VideoProps) {
     super(props);
-    const {sourceType} = props;
-
-    // Initializing with an empty element to make TS happy
-    this.videoElement = document.createElement(sourceType || 'video');
+    this.mediaRef = React.createRef();
     this.previousVolume = 1;
   }
 
@@ -173,27 +170,27 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   private play = () => {
-    this.videoElement.play();
+    this.mediaRef.current && this.mediaRef.current.play();
   }
 
   private pause = () => {
-    this.videoElement.pause();
+    this.mediaRef.current && this.mediaRef.current.pause();
   }
 
   private navigate = (time: number) => {
     this.setState({currentTime: time});
-    this.videoElement.currentTime = time;
+    this.mediaRef.current && (this.mediaRef.current.currentTime = time);
   }
 
   private setVolume = (volume: number) => {
     this.setState({volume});
-    this.videoElement.volume = volume;
+    this.mediaRef.current && (this.mediaRef.current.volume = volume);
   }
 
   private requestFullscreen = () => {
     const {sourceType} = this.props;
     if (sourceType === 'video') {
-      requestFullScreen(this.videoElement as HTMLVideoElement);
+      requestFullScreen(this.mediaRef.current as HTMLVideoElement);
     }
   }
 
@@ -233,12 +230,6 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     };
   }
 
-  private savePlayableMediaRef = (element: SourceElement) => {
-    if (!element) {return;}
-
-    this.videoElement = element;
-  }
-
   private onDurationChange = (event: SyntheticEvent<SourceElement>) => {
     const video = event.target as SourceElement;
     
@@ -268,7 +259,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
 
     return children(
       <TagName
-        ref={this.savePlayableMediaRef}
+        ref={this.mediaRef}
         src={src}
         preload={preload}
         controls={controls}
@@ -283,7 +274,8 @@ export class Video extends Component<VideoProps, VideoComponentState> {
         onWaiting={this.onWaiting}
       />,
       videoState,
-      actions      
+      actions,
+      this.mediaRef  
     );
   }
 }
