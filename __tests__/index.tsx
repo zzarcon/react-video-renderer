@@ -57,8 +57,8 @@ describe('VideoRenderer', () => {
       const {component} = setup();
       const instance = component.instance() as Video;
 
-      instance.play = jest.fn();
-      instance.navigate = jest.fn();
+      instance['play'] = jest.fn();
+      instance['navigate'] = jest.fn();
 
       simulate(component, 'timeUpdate', {
         currentTime: 10,
@@ -68,8 +68,8 @@ describe('VideoRenderer', () => {
       component.setProps({
         src: 'new-src'
       });
-      expect(instance.play).toHaveBeenCalledTimes(1);
-      expect(instance.navigate).toBeCalledWith(10);
+      expect(instance['play']).toHaveBeenCalledTimes(1);
+      expect(instance['navigate']).toBeCalledWith(10);
       expect(component.prop('src')).toEqual('new-src');
       expect(component.state('currentTime')).toEqual(10);
     });
@@ -356,7 +356,6 @@ describe('VideoRenderer', () => {
   });
 
   describe('actions', () => {
-
     let videoActions: VideoActions;
     const children: RenderCallback = (videoElement: ReactNode, state: VideoState, actions: VideoActions) => {
       videoActions = actions;
@@ -394,6 +393,15 @@ describe('VideoRenderer', () => {
       videoActions.setVolume(0.1);
       expect(component.state().volume).toEqual(0.1);
     });
+
+    it('should use previous volume value when unmute video', () => {
+      const {component} = setup({children});
+      videoActions.setVolume(0.3);
+      videoActions.mute();
+      expect(component.state().volume).toEqual(0);
+      videoActions.unmute();
+      expect(component.state().volume).toEqual(0.3);
+    });
   });
 
   describe('as audio element', () => {
@@ -426,8 +434,8 @@ describe('VideoRenderer', () => {
       const {component, children} = setup({sourceType: 'audio'});
       const instance = component.instance() as Video;
 
-      instance.play = jest.fn();
-      instance.navigate = jest.fn();
+      instance['play'] = jest.fn();
+      instance['navigate'] = jest.fn();
 
       simulate(component, 'timeUpdate', {
         currentTime: 10,
@@ -437,8 +445,8 @@ describe('VideoRenderer', () => {
       component.setProps({
         src: 'new-src'
       });
-      expect(instance.play).toHaveBeenCalledTimes(1);
-      expect(instance.navigate).toBeCalledWith(10);
+      expect(instance['play']).toHaveBeenCalledTimes(1);
+      expect(instance['navigate']).toBeCalledWith(10);
       expect(component.prop('src')).toEqual('new-src');
       expect(component.state('currentTime')).toEqual(10);
     });
