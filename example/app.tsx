@@ -158,25 +158,13 @@ export default class App extends Component <{}, AppState> {
                   </ErrorWrapper>
                 );
               }
-
               const button = status === 'playing' ? (
                 <Button iconBefore={<VidPauseIcon label="play" />} onClick={actions.pause} />
               ) : (
                 <Button iconBefore={<VidPlayIcon label="pause" />} onClick={actions.play} />
               );
-
-                
-              const renderFullScreenButton = () => {
-                if (sourceType === 'video') {
-                  return (<Button iconBefore={<VidFullScreenOnIcon label="fullscreen" />} onClick={actions.requestFullscreen} />)
-                }
-              };
-              //  const hdButtonAppearance = currentSource.label === 'hd' ? 'primary' : undefined;
-              const renderHdButton = () => {
-                if (sourceType === 'video') {
-                  return <Button onClick={this.toggleHD}>HD</Button>
-                }
-              }; 
+              const fullScreenButton = sourceType === 'video' && (<Button iconBefore={<VidFullScreenOnIcon label="fullscreen" />} onClick={actions.requestFullscreen} />);
+              const hdButton = sourceType === 'video' && <Button onClick={this.toggleHD}>HD</Button>; 
 
               return (
                 <VideoWrapper>
@@ -204,8 +192,8 @@ export default class App extends Component <{}, AppState> {
                         </VolumeWrapper>  
                       </LeftControls>
                       <RightControls>
-                        {renderHdButton()}
-                        {renderFullScreenButton()}
+                        {hdButton}
+                        {fullScreenButton}
                       </RightControls>                    
                     </ControlsWrapper>
                   </TimebarWrapper>                

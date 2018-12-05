@@ -54,7 +54,7 @@ describe('VideoRenderer', () => {
     });
 
     it('should play new src at the current time when src changes and video is not paused', () => {
-      const {component, children} = setup();
+      const {component} = setup();
       const instance = component.instance() as Video;
 
       instance.play = jest.fn();
