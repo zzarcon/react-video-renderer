@@ -65,6 +65,7 @@ const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 export class Video extends Component<VideoProps, VideoComponentState> {
   videoElement: HTMLVideoElement | HTMLAudioElement;
+  previousVolume: number;
 
   state: VideoComponentState = {
     isLoading: true,
@@ -82,6 +83,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
 
     // Initializing with an empty element to make TS happy
     this.videoElement = document.createElement(sourceType || 'video');
+    this.previousVolume = 1;
   }
 
   static defaultProps: Partial<VideoProps> = {
@@ -196,12 +198,14 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   private mute = () => {
+    const {volume} = this.state;
+
+    this.previousVolume = volume;
     this.setVolume(0);
   }
 
   private unmute = () => {
-    // TODO: Set volume to previous value before mutting
-    this.setVolume(0.5);
+    this.setVolume(this.previousVolume);
   }
 
   private toggleMute = () => {
