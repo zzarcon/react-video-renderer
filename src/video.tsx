@@ -64,8 +64,8 @@ export type SourceElement = HTMLVideoElement | HTMLAudioElement;
 const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 export class Video extends Component<VideoProps, VideoComponentState> {
-  previousVolume: number;
-  mediaRef: RefObject<SourceElement>;
+  previousVolume: number = 1;
+  mediaRef: RefObject<SourceElement> = React.createRef();
 
   state: VideoComponentState = {
     isLoading: true,
@@ -75,12 +75,6 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     status: 'paused',
     duration: 0,
     isMuted: false
-  }
-
-  constructor(props: VideoProps) {
-    super(props);
-    this.mediaRef = React.createRef();
-    this.previousVolume = 1;
   }
 
   static defaultProps: Partial<VideoProps> = {
