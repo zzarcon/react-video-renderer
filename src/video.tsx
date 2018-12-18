@@ -62,7 +62,7 @@ const getVolumeFromVideo = (video: SourceElement): {volume: number, isMuted: boo
 };
 
 export type SourceElement = HTMLVideoElement | HTMLAudioElement;
-const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+const isSafari = typeof navigator !== 'undefined' ? /^((?!chrome|android).)*safari/i.test(navigator.userAgent) : false;
 
 export class Video extends Component<VideoProps, VideoComponentState> {
   previousVolume: number = 1;
