@@ -37,6 +37,7 @@ export interface VideoProps {
   controls?: boolean;
   autoPlay?: boolean;
   preload?: string;
+  poster?: string;
   crossOrigin?: string;
 }
 
@@ -249,12 +250,13 @@ export class Video extends Component<VideoProps, VideoComponentState> {
 
   render() {
     const {videoState, actions} = this;
-    const {sourceType, src, children, autoPlay, controls, preload, crossOrigin} = this.props;
+    const {sourceType, poster, src, children, autoPlay, controls, preload, crossOrigin} = this.props;
     const TagName = sourceType || 'video'; // otherwise ts complains about not being able to create React component from TagName
 
     return children(
       <TagName
         ref={this.mediaRef}
+        poster={poster}
         src={src}
         preload={preload}
         controls={controls}
