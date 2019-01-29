@@ -39,6 +39,8 @@ export interface VideoProps {
   preload?: string;
   poster?: string;
   crossOrigin?: string;
+  onCanPlay?: (event: SyntheticEvent<SourceElement>) => void;
+  onError?: (event: SyntheticEvent<SourceElement>) => void;
 }
 
 export interface VideoComponentState {
@@ -126,6 +128,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   private onCanPlay = (event: SyntheticEvent<SourceElement>) => {
+    const {onCanPlay} = this.props;
     const video = event.target as SourceElement;
     const {volume, isMuted} = getVolumeFromVideo(video);
 
@@ -136,6 +139,8 @@ export class Video extends Component<VideoProps, VideoComponentState> {
       currentTime: video.currentTime,
       duration: video.duration
     });
+
+    onCanPlay && onCanPlay(event);
   }
 
   private onPlay = () => {
@@ -235,6 +240,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   private onError = (event: SyntheticEvent<SourceElement>) => {
+    const {onError} = this.props;
     const video = event.target as SourceElement;
     
     this.setState({
@@ -242,6 +248,8 @@ export class Video extends Component<VideoProps, VideoComponentState> {
       status: 'errored',
       error: video.error
     });
+
+    onError && onError(event);
   }
 
   private onWaiting = () => {
