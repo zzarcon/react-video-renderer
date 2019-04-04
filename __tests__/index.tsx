@@ -457,5 +457,50 @@ describe('VideoRenderer', () => {
       expect(component.prop('src')).toEqual('new-src');
       expect(component.state('currentTime')).toEqual(10);
     });
-  })
+  });
+
+  describe('public events', () => {
+    it('should raise onCanPlay prop with event when media played', () => {
+      const onCanPlay = jest.fn();
+      const {component} = setup({
+        onCanPlay,
+      });
+      const instance = component.instance() as Video;
+      instance['play'] = jest.fn();
+      const e = {
+        target: {
+          volume: 1,
+        },
+      } as any;
+
+      simulate(component, 'play');
+      component.setProps({
+        src: 'new-src',
+      });
+      instance['onCanPlay'](e);
+      expect(onCanPlay).toHaveBeenCalledWith(e);
+    });
+
+    it('should raise onError prop with event when media errors', () => {
+      const onError = jest.fn();
+      const {component} = setup({
+        onError,
+      });
+      const instance = component.instance() as Video;
+      instance['play'] = jest.fn();
+      const e = {
+        target: {
+          error: 'some-error',
+        },
+      } as any;
+
+      simulate(component, 'play');
+      component.setProps({
+        src: 'new-src',
+      });
+      instance['onError'](e);
+      expect(onError).toHaveBeenCalledWith(e);
+      expect(component.state().error).toEqual('some-error');
+    });
+  });
 });
