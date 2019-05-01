@@ -41,6 +41,7 @@ export interface VideoProps {
   crossOrigin?: string;
   onCanPlay?: (event: SyntheticEvent<SourceElement>) => void;
   onError?: (event: SyntheticEvent<SourceElement>) => void;
+  onLoadedData?: (event: SyntheticEvent<SourceElement>) => void;
 }
 
 export interface VideoComponentState {
@@ -256,6 +257,11 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     this.setState({ isLoading: true });
   }
 
+  private onLoadedData = (event: SyntheticEvent<SourceElement>) => {
+    const {onLoadedData} = this.props;
+    onLoadedData && onLoadedData(event);
+  };
+
   render() {
     const {videoState, actions} = this;
     const {sourceType, poster, src, children, autoPlay, controls, preload, crossOrigin} = this.props;
@@ -278,6 +284,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
         onError={this.onError}
         onWaiting={this.onWaiting}
         crossOrigin={crossOrigin}
+        onLoadedData={this.onLoadedData}
       />,
       videoState,
       actions,

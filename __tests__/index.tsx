@@ -502,5 +502,26 @@ describe('VideoRenderer', () => {
       expect(onError).toHaveBeenCalledWith(e);
       expect(component.state().error).toEqual('some-error');
     });
+
+    it('should raise onLoadedData prop with event when media data has loaded', () => {
+      const onLoadedData = jest.fn();
+      const {component} = setup({
+        onLoadedData,
+      });
+      const instance = component.instance() as Video;
+      instance['play'] = jest.fn();
+      const e = {
+        target: {
+          volume: 1,
+        },
+      } as any;
+
+      simulate(component, 'play');
+      component.setProps({
+        src: 'new-src',
+      });
+      instance['onLoadedData'](e);
+      expect(onLoadedData).toHaveBeenCalledWith(e);
+    });
   });
 });
