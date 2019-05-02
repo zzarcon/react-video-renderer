@@ -516,7 +516,6 @@ describe('VideoRenderer', () => {
         },
       } as any;
 
-      simulate(component, 'play');
       component.setProps({
         src: 'new-src',
       });
