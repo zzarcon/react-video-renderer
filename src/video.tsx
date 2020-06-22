@@ -187,7 +187,10 @@ export class Video extends Component<VideoProps, VideoComponentState> {
 
   private setVolume = (volume: number) => {
     this.setState({volume});
-    this.mediaRef.current && (this.mediaRef.current.volume = volume);
+    if (this.mediaRef.current) {
+      this.mediaRef.current.volume = volume;
+      this.mediaRef.current.muted = (volume === 0);
+    }
   }
 
   private requestFullscreen = () => {
