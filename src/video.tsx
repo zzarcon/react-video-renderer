@@ -58,7 +58,7 @@ export interface VideoComponentState {
 
 const getVolumeFromVideo = (video: SourceElement): {volume: number, isMuted: boolean} => {
   const volume = video.volume;
-  const isMuted = volume === 0;
+  const isMuted = video.muted || volume === 0;
 
   return {
     volume,
@@ -212,9 +212,9 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   private toggleMute = () => {
-    const {volume} = this.videoState;
+    const {volume, isMuted} = this.videoState;
 
-    if (volume > 0) {
+    if (!isMuted && volume > 0) {
       this.mute();
     } else {
       this.unmute();
