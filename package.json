@@ -1,6 +1,6 @@
 {
   "name": "react-video-renderer",
-  "version": "2.4.2",
+  "version": "2.4.3",
   "main": "dist/es5/index.js",
   "jsnext:main": "dist/es2015/index.js",
   "module": "dist/es2015/index.js",
@@ -14,7 +14,7 @@
     "@atlaskit/single-select": "^4.0.3",
     "@atlaskit/spinner": "^8.0.0",
     "react-gh-corner": "^1.1.2",
-    "ts-react-toolbox": "^0.1.23"
+    "ts-react-toolbox": "0.2.20"
   },
   "engines": {
     "node": ">=8.5.0"
