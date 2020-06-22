@@ -55,6 +55,8 @@ interface Props {
   children: RenderCallback;
   controls?: boolean;
   autoPlay?: boolean;
+  muted?: boolean;
+  playsInline?: boolean;
   preload?: string;
 }
 ```
