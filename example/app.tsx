@@ -8,7 +8,8 @@ import Button from '@atlaskit/button';
 import Select from '@atlaskit/single-select';
 import Spinner from '@atlaskit/spinner';
 import Corner from 'react-gh-corner';
-import Video from '../src';
+import Slider from '@atlaskit/field-range';
+import Video, { SetPlaybackSpeed } from '../src';
 import {
   VideoRendererWrapper,
   SelectWrapper,
@@ -24,7 +25,8 @@ import {
   TimebarWrapper,
   VolumeWrapper,
   SpinnerWrapper,
-  BuiltWithWrapper
+  BuiltWithWrapper,
+  PlaybackSpeedWrapper
 } from './styled';
 import {TimeRange} from './timeRange';
 
@@ -36,6 +38,7 @@ export interface ContentSource {
 export interface AppState {
   currentSource: ContentSource;
   sourceType: ContentType;
+  playbackSpeed: number;
 }
 
 type ContentType = 'video' | 'audio'
@@ -81,7 +84,8 @@ const selectDefault = (type: ContentType) => type === 'audio' ? audioSources[0].
 export default class App extends Component <{}, AppState> {
   state: AppState = {
     currentSource: selectDefault('video'),
-    sourceType: 'video'
+    sourceType: 'video',
+    playbackSpeed: 1
   }
 
   onTimeChange = (navigate: Function) => (value: number) => {
@@ -119,8 +123,13 @@ export default class App extends Component <{}, AppState> {
     this.setState({sourceType: e.item.value, currentSource: selectDefault(e.item.value)});
   }
 
+  private changePlaybackSpeed = (setPlaybackSpeed: SetPlaybackSpeed) => (playbackSpeed: number) => {
+    setPlaybackSpeed(playbackSpeed);
+    this.setState({playbackSpeed})
+  }
+
   render() {
-    const {currentSource, sourceType} = this.state;
+    const {currentSource, sourceType, playbackSpeed} = this.state;
 
     return (
       <AppWrapper>
@@ -169,6 +178,16 @@ export default class App extends Component <{}, AppState> {
               return (
                 <VideoWrapper>
                   {isLoading && this.renderSpinner()}
+                  <PlaybackSpeedWrapper>
+                    Speed: {playbackSpeed}
+                    <Slider
+                      step={0.5}
+                      min={0.5}
+                      max={2}
+                      value={playbackSpeed}
+                      onChange={this.changePlaybackSpeed(actions.setPlaybackSpeed)}
+                    />
+                  </PlaybackSpeedWrapper>
                   {video}
                   <TimebarWrapper>
                     <TimeRangeWrapper>
