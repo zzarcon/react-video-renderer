@@ -357,9 +357,12 @@ describe('VideoRenderer', () => {
 
   describe('actions', () => {
     let videoActions: VideoActions;
-    const children: RenderCallback = (videoElement: ReactNode, state: VideoState, actions: VideoActions) => {
+    let videoElement: ReactNode;
+    const children: RenderCallback = (element: ReactNode, state: VideoState, actions: VideoActions) => {
       videoActions = actions;
-      return videoElement;
+      videoElement = element;
+
+      return element;
     };
 
     it('should set video current time to passed time when navigate is called', () => {
@@ -401,6 +404,13 @@ describe('VideoRenderer', () => {
       expect(component.state().volume).toEqual(0);
       videoActions.unmute();
       expect(component.state().volume).toEqual(0.3);
+    });
+
+    it('should change playback speed when setPlaybackSpeed is called', () => {
+      setup({sourceType: 'video', children});
+
+      videoActions.setPlaybackSpeed(1.5);
+      expect((videoElement as any).ref.current.playbackRate).toEqual(1.5)
     });
   });
 

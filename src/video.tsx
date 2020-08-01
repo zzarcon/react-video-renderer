@@ -17,12 +17,14 @@ export interface VideoState {
 
 export type NavigateFunction = (time: number) => void;
 export type SetVolumeFunction = (volume: number) => void;
+export type SetPlaybackSpeed = (volume: number) => void;
 
 export interface VideoActions {
   play: () => void;
   pause: () => void;
   navigate: NavigateFunction;
   setVolume: SetVolumeFunction;
+  setPlaybackSpeed: SetPlaybackSpeed;
   requestFullscreen: () => void;
   mute: () => void;
   unmute: () => void;
@@ -193,6 +195,10 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     }
   }
 
+  private setPlaybackSpeed = (playbackSpeed: number) => {
+    this.mediaRef.current && (this.mediaRef.current.playbackRate = playbackSpeed);
+  }
+
   private requestFullscreen = () => {
     const {sourceType} = this.props;
     if (sourceType === 'video') {
@@ -222,17 +228,18 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   private get actions(): VideoActions {
-    const {play, pause, navigate, setVolume, requestFullscreen, mute, unmute, toggleMute} = this;
+    const {play, pause, navigate, setVolume, setPlaybackSpeed, requestFullscreen, mute, unmute, toggleMute} = this;
 
     return {
       play,
       pause,
       navigate,
       setVolume,
+      setPlaybackSpeed,
       requestFullscreen,
       mute,
       unmute,
-      toggleMute
+      toggleMute,
     };
   }
 
