@@ -38,6 +38,8 @@ export interface VideoProps {
   sourceType?: 'video' | 'audio';
   controls?: boolean;
   autoPlay?: boolean;
+  muted?: boolean;
+  playsInline?: boolean;
   preload?: string;
   poster?: string;
   crossOrigin?: string;
@@ -58,7 +60,7 @@ export interface VideoComponentState {
 
 const getVolumeFromVideo = (video: SourceElement): {volume: number, isMuted: boolean} => {
   const volume = video.volume;
-  const isMuted = volume === 0;
+  const isMuted = video.muted || volume === 0;
 
   return {
     volume,
@@ -187,7 +189,10 @@ export class Video extends Component<VideoProps, VideoComponentState> {
 
   private setVolume = (volume: number) => {
     this.setState({volume});
-    this.mediaRef.current && (this.mediaRef.current.volume = volume);
+    if (this.mediaRef.current) {
+      this.mediaRef.current.volume = volume;
+      this.mediaRef.current.muted = (volume === 0);
+    }
   }
 
   private setPlaybackSpeed = (playbackSpeed: number) => {
@@ -213,9 +218,9 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   private toggleMute = () => {
-    const {volume} = this.videoState;
+    const {volume, isMuted} = this.videoState;
 
-    if (volume > 0) {
+    if (!isMuted && volume > 0) {
       this.mute();
     } else {
       this.unmute();
@@ -265,7 +270,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
 
   render() {
     const {videoState, actions} = this;
-    const {sourceType, poster, src, children, autoPlay, controls, preload, crossOrigin} = this.props;
+    const {sourceType, poster, src, children, autoPlay, controls, muted, playsInline, preload, crossOrigin} = this.props;
     const TagName = sourceType || 'video'; // otherwise ts complains about not being able to create React component from TagName
 
     return children(
@@ -275,6 +280,8 @@ export class Video extends Component<VideoProps, VideoComponentState> {
         src={src}
         preload={preload}
         controls={controls}
+        muted={muted}
+        playsInline={playsInline}
         autoPlay={autoPlay}
         onPlay={this.onPlay}
         onPause={this.onPause}
