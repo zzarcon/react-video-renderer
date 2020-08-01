@@ -15,7 +15,7 @@
     "@atlaskit/single-select": "^4.0.3",
     "@atlaskit/spinner": "^8.0.0",
     "react-gh-corner": "^1.1.2",
-    "ts-react-toolbox": "^0.1.23"
+    "ts-react-toolbox": "0.2.20"
   },
   "engines": {
     "node": ">=8.5.0"
