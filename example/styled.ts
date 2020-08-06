@@ -53,7 +53,8 @@ export const VolumeWrapper = styled.div`
   position: relative;
   width: 35px;
   overflow: hidden;
-  transition: width .3s;
+  transition: width .3s ease-out; 
+  transition-delay: 1s;
 
   input {
     margin-left: 20px;
@@ -61,6 +62,11 @@ export const VolumeWrapper = styled.div`
 
   &:hover {
     width: 165px;
+    transition: width .3s
+  }
+  &:active {
+    width: 165px;
+    transition: width .3s
   }
 `;
 
@@ -155,6 +161,7 @@ export const VideoWrapper = styled.div`
   height: 100%;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
 `;
 
 export const ErrorWrapper = styled.div`
@@ -209,4 +216,9 @@ export const BuiltWithWrapper = styled.div`
   a {
     color: black;
   }
+`;
+
+export const PlaybackSpeedWrapper = styled.div`
+  background: white;
+  padding-top: 80px;
 `;

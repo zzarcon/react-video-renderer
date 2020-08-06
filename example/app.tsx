@@ -8,7 +8,8 @@ import Button from '@atlaskit/button';
 import Select from '@atlaskit/single-select';
 import Spinner from '@atlaskit/spinner';
 import Corner from 'react-gh-corner';
-import Video from '../src';
+import Slider from '@atlaskit/field-range';
+import Video, { SetPlaybackSpeed } from '../src';
 import {
   VideoRendererWrapper,
   SelectWrapper,
@@ -24,23 +25,50 @@ import {
   TimebarWrapper,
   VolumeWrapper,
   SpinnerWrapper,
-  BuiltWithWrapper
+  BuiltWithWrapper,
+  PlaybackSpeedWrapper
 } from './styled';
 import {TimeRange} from './timeRange';
 
-export interface VideoSource {
+export interface ContentSource {
   content: string;
   value: string;
 }
 
 export interface AppState {
-  currentSource: VideoSource;
+  currentSource: ContentSource;
+  sourceType: ContentType;
+  playbackSpeed: number;
 }
 
+type ContentType = 'video' | 'audio'
+
+const audioSrc = 'https://upload.wikimedia.org/wikipedia/en/8/80/The_Amen_Break%2C_in_context.ogg';
+const audioSrcError = 'https://upload.wikimedia.org/';
 const hdVideoSrc = 'http://vjs.zencdn.net/v/oceans.mp4';
 const sdVideoSrc = 'http://vjs.zencdn.net/v/oceans.webm';
 const sdVideoSrc2 = 'http://www.onirikal.com/videos/mp4/battle_games.mp4';
 const errorVideoSrc = 'http://zzarcon';
+const chooseContent = [
+  {
+    items: [
+      {
+        value: 'video', content: 'video'
+      },
+      {
+        value: 'audio', content: 'audio'
+      }
+    ]
+  }
+]
+const audioSources = [
+  {
+    items: [
+      { value: audioSrc, content: 'OGG' },
+      { value: audioSrcError, content: 'Errored' }
+    ]
+  }
+]
 const videoSources = [
   {
     items: [
@@ -51,10 +79,13 @@ const videoSources = [
     ]
   }
 ];
-const selectedItem = videoSources[0].items[0];
+
+const selectDefault = (type: ContentType) => type === 'audio' ? audioSources[0].items[0] : videoSources[0].items[0]
 export default class App extends Component <{}, AppState> {
   state: AppState = {
-    currentSource: selectedItem
+    currentSource: selectDefault('video'),
+    sourceType: 'video',
+    playbackSpeed: 1
   }
 
   onTimeChange = (navigate: Function) => (value: number) => {
@@ -74,7 +105,7 @@ export default class App extends Component <{}, AppState> {
     });
   }
 
-  onVideoSelected = (e: {item: VideoSource}) => {
+  onContentSelected = (e: {item: ContentSource}) => {
     this.setState({
       currentSource: e.item
     });
@@ -88,8 +119,17 @@ export default class App extends Component <{}, AppState> {
     );
   }
 
+  switchContent = (e: {item: {value: ContentType, content: ContentType}}) => {
+    this.setState({sourceType: e.item.value, currentSource: selectDefault(e.item.value)});
+  }
+
+  private changePlaybackSpeed = (setPlaybackSpeed: SetPlaybackSpeed) => (playbackSpeed: number) => {
+    setPlaybackSpeed(playbackSpeed);
+    this.setState({playbackSpeed})
+  }
+
   render() {
-    const {currentSource} = this.state;
+    const {currentSource, sourceType, playbackSpeed} = this.state;
 
     return (
       <AppWrapper>
@@ -102,14 +142,22 @@ export default class App extends Component <{}, AppState> {
         />
         <SelectWrapper>
           <Select
-            label="Video src"
-            items={videoSources}
-            defaultSelected={selectedItem}
-            onSelected={this.onVideoSelected}
+            label="Content type"
+            items={chooseContent}
+            onSelected={this.switchContent}
+            defaultSelected={{
+              value: 'video', content: 'video'
+            }}
+          />
+          <Select
+            label="Content src"
+            items={sourceType === 'audio' ? audioSources : videoSources}
+            defaultSelected={selectDefault(sourceType)}
+            onSelected={this.onContentSelected}
           />
         </SelectWrapper>
         <VideoRendererWrapper>
-          <Video src={currentSource.value} >
+          <Video sourceType={sourceType} src={currentSource.value} >
             {(video, videoState, actions) => {
               const {status, currentTime, buffered, duration, volume, isLoading} = videoState;
               if (status === 'errored') {
@@ -119,21 +167,27 @@ export default class App extends Component <{}, AppState> {
                   </ErrorWrapper>
                 );
               }
-
               const button = status === 'playing' ? (
                 <Button iconBefore={<VidPauseIcon label="play" />} onClick={actions.pause} />
               ) : (
                 <Button iconBefore={<VidPlayIcon label="pause" />} onClick={actions.play} />
               );
-              const fullScreenButton = (
-                <Button iconBefore={<VidFullScreenOnIcon label="fullscreen" />} onClick={actions.requestFullscreen} />
-              );
-              //  const hdButtonAppearance = currentSource.label === 'hd' ? 'primary' : undefined;
-              const hdButton = <Button onClick={this.toggleHD}>HD</Button>
+              const fullScreenButton = sourceType === 'video' && (<Button iconBefore={<VidFullScreenOnIcon label="fullscreen" />} onClick={actions.requestFullscreen} />);
+              const hdButton = sourceType === 'video' && <Button onClick={this.toggleHD}>HD</Button>; 
 
               return (
                 <VideoWrapper>
                   {isLoading && this.renderSpinner()}
+                  <PlaybackSpeedWrapper>
+                    Speed: {playbackSpeed}
+                    <Slider
+                      step={0.5}
+                      min={0.5}
+                      max={2}
+                      value={playbackSpeed}
+                      onChange={this.changePlaybackSpeed(actions.setPlaybackSpeed)}
+                    />
+                  </PlaybackSpeedWrapper>
                   {video}
                   <TimebarWrapper>
                     <TimeRangeWrapper>
