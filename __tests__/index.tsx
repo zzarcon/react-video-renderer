@@ -420,7 +420,8 @@ describe('VideoRenderer', () => {
       expect(children).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining(expectedState),
-        expect.anything()
+        expect.anything(),
+        expect.anything(),
       );
     });
 
@@ -436,7 +437,8 @@ describe('VideoRenderer', () => {
       expect(children).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining(expectedState),
-        expect.anything()
+        expect.anything(),
+        expect.anything(),
       );
     });
 
@@ -446,12 +448,13 @@ describe('VideoRenderer', () => {
       videoActions.setVolume(0.3);
       videoActions.mute();
       let expectedState: Partial<VideoState> = {
-        volume: 0.1,
+        volume: 0,
       };
       expect(children).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining(expectedState),
-        expect.anything()
+        expect.anything(),
+        expect.anything(),
       );
       videoActions.unmute();
       expectedState = {
@@ -460,7 +463,8 @@ describe('VideoRenderer', () => {
       expect(children).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining(expectedState),
-        expect.anything()
+        expect.anything(),
+        expect.anything(),
       );
     });
 

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Component, ReactElement, ReactNode , SyntheticEvent, RefObject} from 'react';
+import { Component, ReactElement, ReactNode, SyntheticEvent, RefObject } from 'react';
 import { requestFullScreen } from './utils';
 
 export type VideoStatus = 'playing' | 'paused' | 'errored';
@@ -33,6 +33,7 @@ export interface VideoActions {
 }
 
 export type RenderCallback = (videoElement: ReactElement<SourceElement>, state: VideoState, actions: VideoActions, ref: RefObject<SourceElement>) => ReactNode;
+
 export interface VideoProps {
   src: string;
   children: RenderCallback;
@@ -72,7 +73,7 @@ const isSafari = typeof navigator !== 'undefined' ? /^((?!chrome|android).)*safa
 
 export class Video extends Component<VideoProps, VideoComponentState> {
   previousVolume: number = 1;
-  mediaRef: RefObject<SourceElement> = React.createRef();
+  mediaRef: RefObject<HTMLVideoElement & HTMLAudioElement> = React.createRef<HTMLVideoElement & HTMLAudioElement>();
 
   state: VideoComponentState = {
     isLoading: true,
@@ -130,7 +131,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   private onCanPlay = (event: SyntheticEvent<SourceElement>) => {
-    const {onCanPlay} = this.props;
+    const { onCanPlay } = this.props;
     const video = event.target as SourceElement;
     const { volume, isMuted } = getVolumeFromVideo(video);
 
@@ -195,14 +196,14 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   private requestFullscreen = () => {
-    const {sourceType} = this.props;
+    const { sourceType } = this.props;
     if (sourceType === 'video') {
       requestFullScreen(this.mediaRef.current as HTMLVideoElement);
     }
   }
 
   private mute = () => {
-    const {volume} = this.state;
+    const { volume } = this.state;
 
     this.previousVolume = volume;
     this.setVolume(0);
@@ -246,7 +247,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   private onError = (event: SyntheticEvent<SourceElement>) => {
-    const {onError} = this.props;
+    const { onError } = this.props;
     const video = event.target as SourceElement;
     this.setState({
       isLoading: false,
@@ -262,8 +263,8 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   render() {
-    const {videoState, actions} = this;
-    const {sourceType, poster, src, children, autoPlay, controls, preload, crossOrigin} = this.props;
+    const { videoState, actions } = this;
+    const { sourceType, poster, src, children, autoPlay, controls, preload, crossOrigin } = this.props;
     const TagName = sourceType || 'video'; // otherwise ts complains about not being able to create React component from TagName
 
     return children(
