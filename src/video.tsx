@@ -1,9 +1,10 @@
 import * as React from 'react';
-import {Component, ReactNode} from 'react';
-import {requestFullScreen} from './utils';
+import { Component, ReactChild, ReactElement, ReactNode } from 'react';
+import { requestFullScreen } from './utils';
 
 export type VideoStatus = 'playing' | 'paused' | 'errored';
 export type VideoError = MediaError | null;
+
 export interface VideoState {
   status: VideoStatus;
   currentTime: number;
@@ -29,7 +30,8 @@ export interface VideoActions {
   toggleMute: () => void;
 }
 
-export type RenderCallback = (videoElement: ReactNode, state: VideoState, actions: VideoActions) => ReactNode;
+export type RenderCallback = (videoElement: ReactElement<HTMLVideoElement>, state: VideoState, actions: VideoActions) => ReactNode;
+
 export interface VideoProps {
   src: string;
   children: RenderCallback;
@@ -49,7 +51,7 @@ export interface VideoComponentState {
   error?: VideoError;
 }
 
-const getVolumeFromVideo = (video: HTMLVideoElement): {volume: number, isMuted: boolean} => {
+const getVolumeFromVideo = (video: HTMLVideoElement): { volume: number, isMuted: boolean } => {
   const volume = video.volume;
   const isMuted = volume === 0;
 
@@ -86,8 +88,8 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   componentDidUpdate(prevProps: VideoProps) {
-    const {src} = this.props;
-    const {currentTime, status} = this.state;
+    const { src } = this.props;
+    const { currentTime, status } = this.state;
     const hasSrcChanged = prevProps.src !== src;
 
     if (hasSrcChanged) {
@@ -102,8 +104,8 @@ export class Video extends Component<VideoProps, VideoComponentState> {
 
   onVolumeChange = (e: any) => {
     const video = e.target as HTMLVideoElement;
-    const {volume, isMuted} = getVolumeFromVideo(video);
-    
+    const { volume, isMuted } = getVolumeFromVideo(video);
+
     this.setState({
       volume,
       isMuted
@@ -120,13 +122,13 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     if (video.buffered.length) {
       const buffered = video.buffered.end(video.buffered.length - 1);
 
-      this.setState({buffered});
+      this.setState({ buffered });
     }
   }
 
   onCanPlay = (e: any) => {
     const video = e.target as HTMLVideoElement;
-    const {volume, isMuted} = getVolumeFromVideo(video);
+    const { volume, isMuted } = getVolumeFromVideo(video);
 
     this.setState({
       volume,
@@ -145,14 +147,14 @@ export class Video extends Component<VideoProps, VideoComponentState> {
 
   onPause = (e: any) => {
     const video = e.target as HTMLVideoElement;
-    
+
     this.setState({
       status: 'paused'
     });
-  } 
+  }
 
   get videoState(): VideoState {
-    const {currentTime, volume, status, duration, buffered, isMuted, isLoading, error} = this.state;
+    const { currentTime, volume, status, duration, buffered, isMuted, isLoading, error } = this.state;
 
     return {
       currentTime,
@@ -175,12 +177,12 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   navigate = (time: number) => {
-    this.setState({currentTime: time});
+    this.setState({ currentTime: time });
     this.videoElement.currentTime = time;
   }
 
   setVolume = (volume: number) => {
-    this.setState({volume});
+    this.setState({ volume });
     this.videoElement.volume = volume;
   }
 
@@ -198,7 +200,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   toggleMute = () => {
-    const {volume} = this.videoState;
+    const { volume } = this.videoState;
 
     if (volume > 0) {
       this.mute();
@@ -208,7 +210,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   get actions(): VideoActions {
-    const {play, pause, navigate, setVolume, requestFullscreen, mute, unmute, toggleMute} = this;
+    const { play, pause, navigate, setVolume, requestFullscreen, mute, unmute, toggleMute } = this;
 
     return {
       play,
@@ -223,14 +225,16 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   saveVideoRef = (element: HTMLVideoElement) => {
-    if (!element) {return;}
+    if (!element) {
+      return;
+    }
 
     this.videoElement = element;
   }
 
   onDurationChange = (e: any) => {
     const video = e.target as HTMLVideoElement;
-    
+
     this.setState({
       duration: video.duration
     });
@@ -238,7 +242,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
 
   onError = (e: any) => {
     const video = e.target as HTMLVideoElement;
-    
+
     this.setState({
       isLoading: false,
       status: 'errored',
@@ -251,9 +255,9 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   render() {
-    const {videoState, actions} = this;
-    const {src, children, autoPlay, controls, preload} = this.props;
-
+    const { videoState, actions } = this;
+    const { src, children, autoPlay, controls, preload } = this.props;
+    console.log({videoState});
     return children(
       <video
         ref={this.saveVideoRef}
@@ -271,7 +275,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
         onWaiting={this.onWaiting}
       />,
       videoState,
-      actions      
+      actions
     );
   }
 }
