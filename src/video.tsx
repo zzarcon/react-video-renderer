@@ -1,5 +1,12 @@
 import * as React from 'react';
-import { Component, ReactElement, ReactNode, SyntheticEvent, RefObject } from 'react';
+import {
+  Component,
+  ReactElement,
+  ReactNode,
+  SyntheticEvent,
+  RefObject,
+  MediaHTMLAttributes
+} from 'react';
 import { requestFullScreen } from './utils';
 
 export type VideoStatus = 'playing' | 'paused' | 'errored';
@@ -73,7 +80,8 @@ const isSafari = typeof navigator !== 'undefined' ? /^((?!chrome|android).)*safa
 
 export class Video extends Component<VideoProps, VideoComponentState> {
   previousVolume: number = 1;
-  mediaRef: RefObject<HTMLVideoElement & HTMLAudioElement> = React.createRef<HTMLVideoElement & HTMLAudioElement>();
+  videoRef: RefObject<HTMLVideoElement> = React.createRef<HTMLVideoElement>();
+  audioRef: RefObject<HTMLAudioElement> = React.createRef<HTMLAudioElement>();
 
   state: VideoComponentState = {
     isLoading: true,
@@ -174,31 +182,41 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   private play = () => {
-    this.mediaRef.current && this.mediaRef.current.play();
+    this.currentElement && this.currentElement.play();
   }
 
   private pause = () => {
-    this.mediaRef.current && this.mediaRef.current.pause();
+    this.currentElement && this.currentElement.pause();
   }
 
   private navigate = (time: number) => {
     this.setState({ currentTime: time });
-    this.mediaRef.current && (this.mediaRef.current.currentTime = time);
+    this.currentElement && (this.currentElement.currentTime = time);
   }
 
   private setVolume = (volume: number) => {
     this.setState({ volume });
-    this.mediaRef.current && (this.mediaRef.current.volume = volume);
+    this.currentElement && (this.currentElement.volume = volume);
   }
 
   private setPlaybackSpeed = (playbackSpeed: number) => {
-    this.mediaRef.current && (this.mediaRef.current.playbackRate = playbackSpeed);
+    this.currentElement && (this.currentElement.playbackRate = playbackSpeed);
+  }
+
+  private get currentElement(): SourceElement | undefined {
+    if (this.videoRef.current) {
+      return this.videoRef.current;
+    } else if (this.audioRef.current) {
+      return this.audioRef.current;
+    } else {
+      return undefined;
+    }
   }
 
   private requestFullscreen = () => {
     const { sourceType } = this.props;
     if (sourceType === 'video') {
-      requestFullScreen(this.mediaRef.current as HTMLVideoElement);
+      requestFullScreen(this.currentElement as HTMLVideoElement);
     }
   }
 
@@ -264,30 +282,47 @@ export class Video extends Component<VideoProps, VideoComponentState> {
 
   render() {
     const { videoState, actions } = this;
-    const { sourceType, poster, src, children, autoPlay, controls, preload, crossOrigin } = this.props;
-    const TagName = sourceType || 'video'; // otherwise ts complains about not being able to create React component from TagName
+    const { sourceType = 'video', poster, src, children, autoPlay, controls, preload, crossOrigin } = this.props;
 
-    return children(
-      <TagName
-        ref={this.mediaRef}
-        poster={poster}
-        src={src}
-        preload={preload}
-        controls={controls}
-        autoPlay={autoPlay}
-        onPlay={this.onPlay}
-        onPause={this.onPause}
-        onVolumeChange={this.onVolumeChange}
-        onTimeUpdate={this.onTimeUpdate}
-        onCanPlay={this.onCanPlay}
-        onDurationChange={this.onDurationChange}
-        onError={this.onError}
-        onWaiting={this.onWaiting}
-        crossOrigin={crossOrigin}
-      />,
-      videoState,
-      actions,
-      this.mediaRef
-    );
+    const props: Partial<MediaHTMLAttributes<HTMLVideoElement & HTMLAudioElement>>  = {
+      src: src,
+      preload: preload,
+      controls: controls,
+      autoPlay: autoPlay,
+      onPlay: this.onPlay,
+      onPause: this.onPause,
+      onVolumeChange: this.onVolumeChange,
+      onTimeUpdate: this.onTimeUpdate,
+      onCanPlay: this.onCanPlay,
+      onDurationChange: this.onDurationChange,
+      onError: this.onError,
+      onWaiting: this.onWaiting,
+      crossOrigin: crossOrigin,
+    }
+
+    if (sourceType === 'video') {
+      return children(
+        <video
+          ref={this.videoRef}
+          poster={poster}
+          {...props}
+        />,
+        videoState,
+        actions,
+        this.videoRef
+      );
+    }else{
+      return children(
+        <audio
+          ref={this.audioRef}
+          {...props}
+        />,
+        videoState,
+        actions,
+        this.videoRef
+      );
+    }
+
+
   }
 }
