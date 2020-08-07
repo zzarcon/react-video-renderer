@@ -44,10 +44,10 @@ export type RenderCallback = (videoElement: ReactElement<SourceElement>, state: 
 export interface VideoProps {
   src: string;
   children: RenderCallback;
-  sourceType?: 'video' | 'audio';
-  controls?: boolean;
-  autoPlay?: boolean;
-  preload?: string;
+  sourceType: 'video' | 'audio';
+  controls: boolean;
+  autoPlay: boolean;
+  preload: string;
   poster?: string;
   crossOrigin?: string;
   onCanPlay?: (event: SyntheticEvent<SourceElement>) => void;
@@ -93,7 +93,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     isMuted: false
   }
 
-  static defaultProps: Partial<VideoProps> = {
+  static defaultProps = {
     sourceType: 'video',
     autoPlay: false,
     controls: false,
@@ -282,7 +282,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
 
   render() {
     const { videoState, actions } = this;
-    const { sourceType = 'video', poster, src, children, autoPlay, controls, preload, crossOrigin } = this.props;
+    const { sourceType, poster, src, children, autoPlay, controls, preload, crossOrigin } = this.props;
 
     const props: Partial<MediaHTMLAttributes<HTMLVideoElement & HTMLAudioElement>> = {
       src: src,
