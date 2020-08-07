@@ -284,7 +284,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     const { videoState, actions } = this;
     const { sourceType = 'video', poster, src, children, autoPlay, controls, preload, crossOrigin } = this.props;
 
-    const props: Partial<MediaHTMLAttributes<HTMLVideoElement & HTMLAudioElement>>  = {
+    const props: Partial<MediaHTMLAttributes<HTMLVideoElement & HTMLAudioElement>> = {
       src: src,
       preload: preload,
       controls: controls,
@@ -311,7 +311,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
         actions,
         this.videoRef
       );
-    }else{
+    } else {
       return children(
         <audio
           ref={this.audioRef}
