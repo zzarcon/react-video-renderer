@@ -4,7 +4,7 @@ import Video, {
   VideoProps,
   RenderCallback,
   VideoState,
-  VideoComponentState
+  VideoComponentState, SourceElement
 } from '../src';
 
 describe('VideoRenderer', () => {
@@ -58,6 +58,10 @@ describe('VideoRenderer', () => {
         autoPlay: true,
         controls: true
       }));
+
+      expect(customChildren.mock.calls[0][3].current).toEqual(expect.objectContaining<Partial<SourceElement>>({
+        currentTime: 0,
+      }));
     });
 
     it('should play new src at the current time when src changes and video is not paused', () => {
@@ -79,6 +83,15 @@ describe('VideoRenderer', () => {
       expect(instance['navigate']).toBeCalledWith(10);
       expect(component.prop('src')).toEqual('new-src');
       expect(component.state('currentTime')).toEqual(10);
+    });
+
+    it('should start playing from defaultTime point if provided', () => {
+      const { children } = setup({ defaultTime: 10 });
+      const videoElement = children.mock.calls[0][3].current;
+      if (!videoElement) {
+        return expect(videoElement).toBeDefined();
+      }
+      expect(videoElement.currentTime).toEqual(10);
     });
 
     xit('should return the same video element regardless of re-renders', () => {

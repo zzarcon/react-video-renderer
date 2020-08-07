@@ -44,6 +44,7 @@ export type RenderCallback = (videoElement: ReactElement<SourceElement>, state: 
 export interface VideoProps {
   src: string;
   children: RenderCallback;
+  defaultTime: number;
   sourceType: 'video' | 'audio';
   controls: boolean;
   autoPlay: boolean;
@@ -94,10 +95,18 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   static defaultProps = {
+    defaultTime: 0,
     sourceType: 'video',
     autoPlay: false,
     controls: false,
     preload: isSafari ? 'auto' : 'metadata'
+  }
+
+  componentDidMount() {
+    const { defaultTime } = this.props;
+    if (this.currentElement) {
+      this.currentElement.currentTime = defaultTime;
+    }
   }
 
   componentDidUpdate(prevProps: VideoProps) {
