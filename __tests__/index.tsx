@@ -480,9 +480,14 @@ describe('VideoRenderer', () => {
   });
 
   describe('ref', () => {
-    it('should pass dom ref to render callback', () => {
+    it('should pass dom video ref to render callback', () => {
       const { children } = setup();
-      expect(children.mock.calls[0][3].current).toBeInstanceOf(HTMLVideoElement)
+      expect(children.mock.calls[0][3].current).toBeInstanceOf(HTMLVideoElement);
+    })
+
+    it('should pass dom audio ref to render callback', () => {
+      const { children } = setup({ sourceType: 'audio' });
+      expect(children.mock.calls[0][3].current).toBeInstanceOf(HTMLAudioElement);
     })
   });
 

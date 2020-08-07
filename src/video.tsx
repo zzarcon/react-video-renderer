@@ -319,7 +319,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
         />,
         videoState,
         actions,
-        this.videoRef
+        this.audioRef
       );
     }
 
