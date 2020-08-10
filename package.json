@@ -1,6 +1,6 @@
 {
   "name": "react-video-renderer",
-  "version": "2.4.4",
+  "version": "2.4.5",
   "main": "dist/es5/index.js",
   "jsnext:main": "dist/es2015/index.js",
   "module": "dist/es2015/index.js",
