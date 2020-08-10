@@ -44,6 +44,7 @@ export type RenderCallback = (videoElement: ReactElement<SourceElement>, state: 
 export interface VideoProps {
   src: string;
   children: RenderCallback;
+  defaultTime: number;
   sourceType: 'video' | 'audio';
   controls: boolean;
   autoPlay: boolean;
@@ -52,6 +53,7 @@ export interface VideoProps {
   crossOrigin?: string;
   onCanPlay?: (event: SyntheticEvent<SourceElement>) => void;
   onError?: (event: SyntheticEvent<SourceElement>) => void;
+  onTimeChange?: (time: number) => void;
 }
 
 export interface VideoComponentState {
@@ -80,6 +82,7 @@ const isSafari = typeof navigator !== 'undefined' ? /^((?!chrome|android).)*safa
 
 export class Video extends Component<VideoProps, VideoComponentState> {
   previousVolume: number = 1;
+  previousTime: number = -1;
   videoRef: RefObject<HTMLVideoElement> = React.createRef<HTMLVideoElement>();
   audioRef: RefObject<HTMLAudioElement> = React.createRef<HTMLAudioElement>();
 
@@ -94,10 +97,18 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   static defaultProps = {
+    defaultTime: 0,
     sourceType: 'video',
     autoPlay: false,
     controls: false,
     preload: isSafari ? 'auto' : 'metadata'
+  }
+
+  onLoadedData = () => {
+    const { defaultTime } = this.props;
+    if (this.currentElement) {
+      this.currentElement.currentTime = defaultTime;
+    }
   }
 
   componentDidUpdate(prevProps: VideoProps) {
@@ -126,6 +137,13 @@ export class Video extends Component<VideoProps, VideoComponentState> {
 
   private onTimeUpdate = (event: SyntheticEvent<SourceElement>) => {
     const video = event.target as SourceElement;
+    const { onTimeChange } = this.props;
+
+    const flooredTime = Math.floor(video.currentTime);
+    if (onTimeChange && flooredTime !== this.previousTime) {
+      onTimeChange(flooredTime);
+      this.previousTime = flooredTime;
+    }
 
     this.setState({
       currentTime: video.currentTime
@@ -290,6 +308,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
       preload,
       controls,
       autoPlay,
+      onLoadedData: this.onLoadedData,
       onPlay: this.onPlay,
       onPause: this.onPause,
       onVolumeChange: this.onVolumeChange,

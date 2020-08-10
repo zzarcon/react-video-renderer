@@ -4,7 +4,7 @@ import Video, {
   VideoProps,
   RenderCallback,
   VideoState,
-  VideoComponentState
+  VideoComponentState, SourceElement
 } from '../src';
 
 describe('VideoRenderer', () => {
@@ -58,6 +58,10 @@ describe('VideoRenderer', () => {
         autoPlay: true,
         controls: true
       }));
+
+      expect(customChildren.mock.calls[0][3].current).toEqual(expect.objectContaining<Partial<SourceElement>>({
+        currentTime: 0,
+      }));
     });
 
     it('should play new src at the current time when src changes and video is not paused', () => {
@@ -79,6 +83,16 @@ describe('VideoRenderer', () => {
       expect(instance['navigate']).toBeCalledWith(10);
       expect(component.prop('src')).toEqual('new-src');
       expect(component.state('currentTime')).toEqual(10);
+    });
+
+    it('should start playing from defaultTime point if provided', () => {
+      const { children, component } = setup({ defaultTime: 10 });
+      const videoElement = children.mock.calls[0][3].current;
+      if (!videoElement) {
+        return expect(videoElement).toBeDefined();
+      }
+      simulate(component, 'loadeddata');
+      expect(videoElement.currentTime).toEqual(10);
     });
 
     xit('should return the same video element regardless of re-renders', () => {
@@ -537,6 +551,16 @@ describe('VideoRenderer', () => {
       expect(component.prop('src')).toEqual('new-src');
       expect(component.state('currentTime')).toEqual(10);
     });
+
+    it('should start playing from defaultTime point if provided', () => {
+      const { children, component } = setup({ defaultTime: 10, sourceType: 'audio' });
+      const videoElement = children.mock.calls[0][3].current;
+      if (!videoElement) {
+        return expect(videoElement).toBeDefined();
+      }
+      simulate(component, 'loadeddata', undefined, 'audio');
+      expect(videoElement.currentTime).toEqual(10);
+    });
   });
 
   describe('public events', () => {
@@ -581,6 +605,37 @@ describe('VideoRenderer', () => {
       instance['onError'](e);
       expect(onError).toHaveBeenCalledWith(e);
       expect(component.state().error).toEqual('some-error');
+    });
+
+    it('should notify every other second when play time changes', () => {
+      const onTimeChange = jest.fn<
+        ReturnType<Required<VideoProps>['onTimeChange']>,
+        Parameters<Required<VideoProps>['onTimeChange']>
+      >();
+      const { component } = setup({
+        onTimeChange,
+      });
+
+      simulate(component, 'timeUpdate', {
+        currentTime: 10.5,
+        buffered: {}
+      });
+      simulate(component, 'timeUpdate', {
+        currentTime: 10.6,
+        buffered: {}
+      });
+      simulate(component, 'timeUpdate', {
+        currentTime: 11.2,
+        buffered: {}
+      });
+      simulate(component, 'timeUpdate', {
+        currentTime: 11.5,
+        buffered: {}
+      });
+
+      expect(onTimeChange).toHaveBeenCalledTimes(2);
+      expect(onTimeChange).toHaveBeenCalledWith(10);
+      expect(onTimeChange).toHaveBeenCalledWith(11);
     });
   });
 });
