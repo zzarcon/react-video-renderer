@@ -550,6 +550,15 @@ describe('VideoRenderer', () => {
       expect(component.prop('src')).toEqual('new-src');
       expect(component.state('currentTime')).toEqual(10);
     });
+
+    it('should start playing from defaultTime point if provided', () => {
+      const { children } = setup({ defaultTime: 10, sourceType: 'audio' });
+      const videoElement = children.mock.calls[0][3].current;
+      if (!videoElement) {
+        return expect(videoElement).toBeDefined();
+      }
+      expect(videoElement.currentTime).toEqual(10);
+    });
   });
 
   describe('public events', () => {
@@ -594,6 +603,37 @@ describe('VideoRenderer', () => {
       instance['onError'](e);
       expect(onError).toHaveBeenCalledWith(e);
       expect(component.state().error).toEqual('some-error');
+    });
+
+    it('should notify every other second when play time changes', () => {
+      const onTimeChange = jest.fn<
+        ReturnType<Required<VideoProps>['onTimeChange']>,
+        Parameters<Required<VideoProps>['onTimeChange']>
+      >();
+      const { component } = setup({
+        onTimeChange,
+      });
+
+      simulate(component, 'timeUpdate', {
+        currentTime: 10.5,
+        buffered: {}
+      });
+      simulate(component, 'timeUpdate', {
+        currentTime: 10.6,
+        buffered: {}
+      });
+      simulate(component, 'timeUpdate', {
+        currentTime: 11.2,
+        buffered: {}
+      });
+      simulate(component, 'timeUpdate', {
+        currentTime: 11.5,
+        buffered: {}
+      });
+
+      expect(onTimeChange).toHaveBeenCalledTimes(2);
+      expect(onTimeChange).toHaveBeenCalledWith(10);
+      expect(onTimeChange).toHaveBeenCalledWith(11);
     });
   });
 });
