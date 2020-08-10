@@ -204,9 +204,10 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   private get currentElement(): SourceElement | undefined {
-    if (this.videoRef.current) {
+    const { sourceType } = this.props;
+    if (sourceType === 'video' && this.videoRef.current) {
       return this.videoRef.current;
-    } else if (this.audioRef.current) {
+    } else if (sourceType === 'audio' && this.audioRef.current) {
       return this.audioRef.current;
     } else {
       return undefined;
