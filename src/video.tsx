@@ -285,10 +285,10 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     const { sourceType, poster, src, children, autoPlay, controls, preload, crossOrigin } = this.props;
 
     const props: Partial<MediaHTMLAttributes<HTMLVideoElement & HTMLAudioElement>> = {
-      src: src,
-      preload: preload,
-      controls: controls,
-      autoPlay: autoPlay,
+      src,
+      preload,
+      controls,
+      autoPlay,
       onPlay: this.onPlay,
       onPause: this.onPause,
       onVolumeChange: this.onVolumeChange,
@@ -297,7 +297,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
       onDurationChange: this.onDurationChange,
       onError: this.onError,
       onWaiting: this.onWaiting,
-      crossOrigin: crossOrigin,
+      crossOrigin,
     }
 
     if (sourceType === 'video') {
