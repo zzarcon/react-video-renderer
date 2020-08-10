@@ -104,7 +104,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     preload: isSafari ? 'auto' : 'metadata'
   }
 
-  componentDidMount() {
+  onLoadedData = () => {
     const { defaultTime } = this.props;
     if (this.currentElement) {
       this.currentElement.currentTime = defaultTime;
@@ -307,6 +307,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
       preload,
       controls,
       autoPlay,
+      onLoadedData: this.onLoadedData,
       onPlay: this.onPlay,
       onPause: this.onPause,
       onVolumeChange: this.onVolumeChange,

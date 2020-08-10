@@ -15,6 +15,7 @@
     "noImplicitReturns": true,
     "importHelpers": true,
     "noFallthroughCasesInSwitch": true,
+    "keyofStringsOnly": true,
     "lib": [
       "dom",
       "es2015",
@@ -25,7 +26,8 @@
       "es2015.symbol",
       "es2015.iterable",
       "es2015.promise"
-    ]
+    ],
+    "types": ["react", "jest", "node"]
   },
   "files": [
     "./custom-typings/atlaskit.d.ts"

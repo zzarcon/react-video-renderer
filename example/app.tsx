@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Component} from 'react';
+import { Component } from 'react';
 import VidPlayIcon from '@atlaskit/icon/glyph/vid-play';
 import VidPauseIcon from '@atlaskit/icon/glyph/vid-pause';
 import VidFullScreenOnIcon from '@atlaskit/icon/glyph/vid-full-screen-on';
@@ -28,7 +28,7 @@ import {
   BuiltWithWrapper,
   PlaybackSpeedWrapper
 } from './styled';
-import {TimeRange} from './timeRange';
+import { TimeRange } from './timeRange';
 
 export interface ContentSource {
   content: string;
@@ -88,7 +88,7 @@ export default class App extends Component <{}, AppState> {
     playbackSpeed: 1
   }
 
-  onTimeChange = (navigate: Function) => (value: number) => {
+  onNavigate = (navigate: Function) => (value: number) => {
     navigate(value);
   }
 
@@ -98,14 +98,14 @@ export default class App extends Component <{}, AppState> {
   }
 
   toggleHD = () => {
-    const {currentSource} = this.state;
+    const { currentSource } = this.state;
 
     this.setState({
       currentSource: currentSource.value === 'HD' ? videoSources[0].items[1] : videoSources[0].items[0]
     });
   }
 
-  onContentSelected = (e: {item: ContentSource}) => {
+  onContentSelected = (e: { item: ContentSource }) => {
     this.setState({
       currentSource: e.item
     });
@@ -114,29 +114,54 @@ export default class App extends Component <{}, AppState> {
   renderSpinner = () => {
     return (
       <SpinnerWrapper>
-        <Spinner size="xlarge" />
+        <Spinner size="xlarge"/>
       </SpinnerWrapper>
     );
   }
 
-  switchContent = (e: {item: {value: ContentType, content: ContentType}}) => {
-    this.setState({sourceType: e.item.value, currentSource: selectDefault(e.item.value)});
+  switchContent = (e: { item: { value: ContentType, content: ContentType } }) => {
+    this.setState({ sourceType: e.item.value, currentSource: selectDefault(e.item.value) });
   }
 
   private changePlaybackSpeed = (setPlaybackSpeed: SetPlaybackSpeed) => (playbackSpeed: number) => {
     setPlaybackSpeed(playbackSpeed);
-    this.setState({playbackSpeed})
+    this.setState({ playbackSpeed })
+  }
+
+  private getDefaultTimeLocalStorageKey() {
+    const { currentSource } = this.state;
+    return `react-video-render-default-time-${currentSource.value}`
+  }
+
+  private get defaultTime(): number {
+    const savedTime = localStorage.getItem(
+      this.getDefaultTimeLocalStorageKey()
+    );
+
+    if (savedTime) {
+      return JSON.parse(savedTime);
+    } else {
+      return 0;
+    }
+  }
+
+  private onTimeChange = (currentTime: number) => {
+    localStorage.setItem(
+      this.getDefaultTimeLocalStorageKey(),
+      JSON.stringify(currentTime),
+    );
   }
 
   render() {
-    const {currentSource, sourceType, playbackSpeed} = this.state;
+    const { currentSource, sourceType, playbackSpeed } = this.state;
 
     return (
       <AppWrapper>
         <BuiltWithWrapper>
-          Built with <a target="_blank" href="https://github.com/zzarcon/react-video-renderer">react-video-renderer</a> 🎥
+          Built with <a target="_blank"
+                        href="https://github.com/zzarcon/react-video-renderer">react-video-renderer</a> 🎥
         </BuiltWithWrapper>
-        <Corner 
+        <Corner
           href="https://github.com/zzarcon/react-video-renderer"
           size={100}
         />
@@ -157,9 +182,14 @@ export default class App extends Component <{}, AppState> {
           />
         </SelectWrapper>
         <VideoRendererWrapper>
-          <Video sourceType={sourceType} src={currentSource.value} >
+          <Video
+            sourceType={sourceType}
+            src={currentSource.value}
+            defaultTime={this.defaultTime}
+            onTimeChange={this.onTimeChange}
+          >
             {(video, videoState, actions) => {
-              const {status, currentTime, buffered, duration, volume, isLoading} = videoState;
+              const { status, currentTime, buffered, duration, volume, isLoading } = videoState;
               if (status === 'errored') {
                 return (
                   <ErrorWrapper>
@@ -168,12 +198,15 @@ export default class App extends Component <{}, AppState> {
                 );
               }
               const button = status === 'playing' ? (
-                <Button iconBefore={<VidPauseIcon label="play" />} onClick={actions.pause} />
+                <Button iconBefore={<VidPauseIcon label="play"/>} onClick={actions.pause}/>
               ) : (
-                <Button iconBefore={<VidPlayIcon label="pause" />} onClick={actions.play} />
+                <Button iconBefore={<VidPlayIcon label="pause"/>} onClick={actions.play}/>
               );
-              const fullScreenButton = sourceType === 'video' && (<Button iconBefore={<VidFullScreenOnIcon label="fullscreen" />} onClick={actions.requestFullscreen} />);
-              const hdButton = sourceType === 'video' && <Button onClick={this.toggleHD}>HD</Button>; 
+              const fullScreenButton = sourceType === 'video' && (
+                <Button iconBefore={<VidFullScreenOnIcon label="fullscreen"/>}
+                        onClick={actions.requestFullscreen}/>);
+              const hdButton = sourceType === 'video' &&
+                <Button onClick={this.toggleHD}>HD</Button>;
 
               return (
                 <VideoWrapper>
@@ -195,7 +228,7 @@ export default class App extends Component <{}, AppState> {
                         currentTime={currentTime}
                         bufferedTime={buffered}
                         duration={duration}
-                        onChange={this.onTimeChange(actions.navigate)}
+                        onChange={this.onNavigate(actions.navigate)}
                       />
                     </TimeRangeWrapper>
                     <ControlsWrapper>
@@ -205,17 +238,19 @@ export default class App extends Component <{}, AppState> {
                           {Math.round(currentTime)} / {Math.round(duration)}
                         </CurrentTime>
                         <VolumeWrapper>
-                          <MutedIndicator isMuted={videoState.isMuted} />
-                          <Button onClick={actions.toggleMute} iconBefore={<VolumeIcon label="volume" />} />
-                          <input type="range" step={0.01} value={volume} max={1} onChange={this.onVolumeChange(actions.setVolume)} />
-                        </VolumeWrapper>  
+                          <MutedIndicator isMuted={videoState.isMuted}/>
+                          <Button onClick={actions.toggleMute}
+                                  iconBefore={<VolumeIcon label="volume"/>}/>
+                          <input type="range" step={0.01} value={volume} max={1}
+                                 onChange={this.onVolumeChange(actions.setVolume)}/>
+                        </VolumeWrapper>
                       </LeftControls>
                       <RightControls>
                         {hdButton}
                         {fullScreenButton}
-                      </RightControls>                    
+                      </RightControls>
                     </ControlsWrapper>
-                  </TimebarWrapper>                
+                  </TimebarWrapper>
                 </VideoWrapper>
               );
             }}

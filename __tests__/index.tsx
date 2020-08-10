@@ -86,11 +86,12 @@ describe('VideoRenderer', () => {
     });
 
     it('should start playing from defaultTime point if provided', () => {
-      const { children } = setup({ defaultTime: 10 });
+      const { children, component } = setup({ defaultTime: 10 });
       const videoElement = children.mock.calls[0][3].current;
       if (!videoElement) {
         return expect(videoElement).toBeDefined();
       }
+      simulate(component, 'loadeddata');
       expect(videoElement.currentTime).toEqual(10);
     });
 
@@ -552,11 +553,12 @@ describe('VideoRenderer', () => {
     });
 
     it('should start playing from defaultTime point if provided', () => {
-      const { children } = setup({ defaultTime: 10, sourceType: 'audio' });
+      const { children, component } = setup({ defaultTime: 10, sourceType: 'audio' });
       const videoElement = children.mock.calls[0][3].current;
       if (!videoElement) {
         return expect(videoElement).toBeDefined();
       }
+      simulate(component, 'loadeddata', undefined, 'audio');
       expect(videoElement.currentTime).toEqual(10);
     });
   });
