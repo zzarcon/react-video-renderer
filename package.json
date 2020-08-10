@@ -15,10 +15,10 @@
     "@atlaskit/single-select": "^4.0.3",
     "@atlaskit/spinner": "^8.0.0",
     "react-gh-corner": "^1.1.2",
-    "ts-react-toolbox": "^0.1.23"
+    "ts-react-toolbox": "^1.0.1"
   },
   "engines": {
-    "node": ">=8.5.0"
+    "node": "^12.0.0"
   },
   "scripts": {
     "bootstrap": "ts-react-toolbox init",

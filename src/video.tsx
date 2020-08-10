@@ -1,9 +1,17 @@
 import * as React from 'react';
-import {Component, ReactNode, SyntheticEvent, RefObject} from 'react';
-import {requestFullScreen} from './utils';
+import {
+  Component,
+  ReactElement,
+  ReactNode,
+  SyntheticEvent,
+  RefObject,
+  MediaHTMLAttributes
+} from 'react';
+import { requestFullScreen } from './utils';
 
 export type VideoStatus = 'playing' | 'paused' | 'errored';
 export type VideoError = MediaError | null;
+
 export interface VideoState {
   status: VideoStatus;
   currentTime: number;
@@ -31,14 +39,15 @@ export interface VideoActions {
   toggleMute: () => void;
 }
 
-export type RenderCallback = (videoElement: ReactNode, state: VideoState, actions: VideoActions, ref: RefObject<SourceElement>) => ReactNode;
+export type RenderCallback = (videoElement: ReactElement<SourceElement>, state: VideoState, actions: VideoActions, ref: RefObject<SourceElement>) => ReactNode;
+
 export interface VideoProps {
   src: string;
   children: RenderCallback;
-  sourceType?: 'video' | 'audio';
-  controls?: boolean;
-  autoPlay?: boolean;
-  preload?: string;
+  sourceType: 'video' | 'audio';
+  controls: boolean;
+  autoPlay: boolean;
+  preload: string;
   poster?: string;
   crossOrigin?: string;
   onCanPlay?: (event: SyntheticEvent<SourceElement>) => void;
@@ -56,7 +65,7 @@ export interface VideoComponentState {
   error?: VideoError;
 }
 
-const getVolumeFromVideo = (video: SourceElement): {volume: number, isMuted: boolean} => {
+const getVolumeFromVideo = (video: SourceElement): { volume: number, isMuted: boolean } => {
   const volume = video.volume;
   const isMuted = volume === 0;
 
@@ -71,7 +80,8 @@ const isSafari = typeof navigator !== 'undefined' ? /^((?!chrome|android).)*safa
 
 export class Video extends Component<VideoProps, VideoComponentState> {
   previousVolume: number = 1;
-  mediaRef: RefObject<SourceElement> = React.createRef();
+  videoRef: RefObject<HTMLVideoElement> = React.createRef<HTMLVideoElement>();
+  audioRef: RefObject<HTMLAudioElement> = React.createRef<HTMLAudioElement>();
 
   state: VideoComponentState = {
     isLoading: true,
@@ -83,7 +93,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     isMuted: false
   }
 
-  static defaultProps: Partial<VideoProps> = {
+  static defaultProps = {
     sourceType: 'video',
     autoPlay: false,
     controls: false,
@@ -91,8 +101,8 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   componentDidUpdate(prevProps: VideoProps) {
-    const {src} = this.props;
-    const {currentTime, status} = this.state;
+    const { src } = this.props;
+    const { currentTime, status } = this.state;
     const hasSrcChanged = prevProps.src !== src;
 
     if (hasSrcChanged) {
@@ -107,8 +117,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
 
   private onVolumeChange = (event: SyntheticEvent<SourceElement>) => {
     const video = event.target as SourceElement;
-    const {volume, isMuted} = getVolumeFromVideo(video);
-    
+    const { volume, isMuted } = getVolumeFromVideo(video);
     this.setState({
       volume,
       isMuted
@@ -125,14 +134,14 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     if (video.buffered.length) {
       const buffered = video.buffered.end(video.buffered.length - 1);
 
-      this.setState({buffered});
+      this.setState({ buffered });
     }
   }
 
   private onCanPlay = (event: SyntheticEvent<SourceElement>) => {
-    const {onCanPlay} = this.props;
+    const { onCanPlay } = this.props;
     const video = event.target as SourceElement;
-    const {volume, isMuted} = getVolumeFromVideo(video);
+    const { volume, isMuted } = getVolumeFromVideo(video);
 
     this.setState({
       volume,
@@ -151,14 +160,14 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     });
   }
 
-  private onPause = () => {    
+  private onPause = () => {
     this.setState({
       status: 'paused'
     });
-  } 
+  }
 
   private get videoState(): VideoState {
-    const {currentTime, volume, status, duration, buffered, isMuted, isLoading, error} = this.state;
+    const { currentTime, volume, status, duration, buffered, isMuted, isLoading, error } = this.state;
 
     return {
       currentTime,
@@ -173,36 +182,47 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   private play = () => {
-    this.mediaRef.current && this.mediaRef.current.play();
+    this.currentElement && this.currentElement.play();
   }
 
   private pause = () => {
-    this.mediaRef.current && this.mediaRef.current.pause();
+    this.currentElement && this.currentElement.pause();
   }
 
   private navigate = (time: number) => {
-    this.setState({currentTime: time});
-    this.mediaRef.current && (this.mediaRef.current.currentTime = time);
+    this.setState({ currentTime: time });
+    this.currentElement && (this.currentElement.currentTime = time);
   }
 
   private setVolume = (volume: number) => {
-    this.setState({volume});
-    this.mediaRef.current && (this.mediaRef.current.volume = volume);
+    this.setState({ volume });
+    this.currentElement && (this.currentElement.volume = volume);
   }
 
   private setPlaybackSpeed = (playbackSpeed: number) => {
-    this.mediaRef.current && (this.mediaRef.current.playbackRate = playbackSpeed);
+    this.currentElement && (this.currentElement.playbackRate = playbackSpeed);
+  }
+
+  private get currentElement(): SourceElement | undefined {
+    const { sourceType } = this.props;
+    if (sourceType === 'video' && this.videoRef.current) {
+      return this.videoRef.current;
+    } else if (sourceType === 'audio' && this.audioRef.current) {
+      return this.audioRef.current;
+    } else {
+      return undefined;
+    }
   }
 
   private requestFullscreen = () => {
-    const {sourceType} = this.props;
+    const { sourceType } = this.props;
     if (sourceType === 'video') {
-      requestFullScreen(this.mediaRef.current as HTMLVideoElement);
+      requestFullScreen(this.currentElement as HTMLVideoElement);
     }
   }
 
   private mute = () => {
-    const {volume} = this.state;
+    const { volume } = this.state;
 
     this.previousVolume = volume;
     this.setVolume(0);
@@ -213,7 +233,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   private toggleMute = () => {
-    const {volume} = this.videoState;
+    const { volume } = this.videoState;
 
     if (volume > 0) {
       this.mute();
@@ -223,7 +243,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   private get actions(): VideoActions {
-    const {play, pause, navigate, setVolume, setPlaybackSpeed, requestFullscreen, mute, unmute, toggleMute} = this;
+    const { play, pause, navigate, setVolume, setPlaybackSpeed, requestFullscreen, mute, unmute, toggleMute } = this;
 
     return {
       play,
@@ -240,16 +260,14 @@ export class Video extends Component<VideoProps, VideoComponentState> {
 
   private onDurationChange = (event: SyntheticEvent<SourceElement>) => {
     const video = event.target as SourceElement;
-    
     this.setState({
       duration: video.duration
     });
   }
 
   private onError = (event: SyntheticEvent<SourceElement>) => {
-    const {onError} = this.props;
+    const { onError } = this.props;
     const video = event.target as SourceElement;
-    
     this.setState({
       isLoading: false,
       status: 'errored',
@@ -264,31 +282,48 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   }
 
   render() {
-    const {videoState, actions} = this;
-    const {sourceType, poster, src, children, autoPlay, controls, preload, crossOrigin} = this.props;
-    const TagName = sourceType || 'video'; // otherwise ts complains about not being able to create React component from TagName
+    const { videoState, actions } = this;
+    const { sourceType, poster, src, children, autoPlay, controls, preload, crossOrigin } = this.props;
 
-    return children(
-      <TagName
-        ref={this.mediaRef}
-        poster={poster}
-        src={src}
-        preload={preload}
-        controls={controls}
-        autoPlay={autoPlay}
-        onPlay={this.onPlay}
-        onPause={this.onPause}
-        onVolumeChange={this.onVolumeChange}
-        onTimeUpdate={this.onTimeUpdate}
-        onCanPlay={this.onCanPlay}
-        onDurationChange={this.onDurationChange}
-        onError={this.onError}
-        onWaiting={this.onWaiting}
-        crossOrigin={crossOrigin}
-      />,
-      videoState,
-      actions,
-      this.mediaRef  
-    );
+    const props: Partial<MediaHTMLAttributes<HTMLVideoElement & HTMLAudioElement>> = {
+      src,
+      preload,
+      controls,
+      autoPlay,
+      onPlay: this.onPlay,
+      onPause: this.onPause,
+      onVolumeChange: this.onVolumeChange,
+      onTimeUpdate: this.onTimeUpdate,
+      onCanPlay: this.onCanPlay,
+      onDurationChange: this.onDurationChange,
+      onError: this.onError,
+      onWaiting: this.onWaiting,
+      crossOrigin,
+    }
+
+    if (sourceType === 'video') {
+      return children(
+        <video
+          ref={this.videoRef}
+          poster={poster}
+          {...props}
+        />,
+        videoState,
+        actions,
+        this.videoRef
+      );
+    } else {
+      return children(
+        <audio
+          ref={this.audioRef}
+          {...props}
+        />,
+        videoState,
+        actions,
+        this.audioRef
+      );
+    }
+
+
   }
 }
