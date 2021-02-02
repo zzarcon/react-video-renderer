@@ -616,6 +616,12 @@ describe('VideoRenderer', () => {
         onTimeChange,
       });
 
+      simulate(component, "canPlay", {
+        currentTime: 0,
+        volume: 0.5,
+        duration: 25,
+      });
+
       simulate(component, 'timeUpdate', {
         currentTime: 10.5,
         buffered: {}
@@ -634,8 +640,8 @@ describe('VideoRenderer', () => {
       });
 
       expect(onTimeChange).toHaveBeenCalledTimes(2);
-      expect(onTimeChange).toHaveBeenCalledWith(10);
-      expect(onTimeChange).toHaveBeenCalledWith(11);
+      expect(onTimeChange).toHaveBeenCalledWith(10, 25);
+      expect(onTimeChange).toHaveBeenCalledWith(11, 25);
     });
   });
 });
