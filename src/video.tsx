@@ -53,7 +53,7 @@ export interface VideoProps {
   crossOrigin?: string;
   onCanPlay?: (event: SyntheticEvent<SourceElement>) => void;
   onError?: (event: SyntheticEvent<SourceElement>) => void;
-  onTimeChange?: (time: number) => void;
+  onTimeChange?: (time: number, duration: number) => void;
 }
 
 export interface VideoComponentState {
@@ -138,10 +138,11 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   private onTimeUpdate = (event: SyntheticEvent<SourceElement>) => {
     const video = event.target as SourceElement;
     const { onTimeChange } = this.props;
+    const { duration } = this.state;
 
     const flooredTime = Math.floor(video.currentTime);
     if (onTimeChange && flooredTime !== this.previousTime) {
-      onTimeChange(flooredTime);
+      onTimeChange(flooredTime, duration);
       this.previousTime = flooredTime;
     }
 
