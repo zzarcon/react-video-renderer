@@ -85,6 +85,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   previousTime: number = -1;
   videoRef: RefObject<HTMLVideoElement> = React.createRef<HTMLVideoElement>();
   audioRef: RefObject<HTMLAudioElement> = React.createRef<HTMLAudioElement>();
+  onCanPlayTriggered: number = 0;
 
   state: VideoComponentState = {
     isLoading: true,
@@ -170,7 +171,7 @@ export class Video extends Component<VideoProps, VideoComponentState> {
       duration: video.duration
     });
 
-    onCanPlay && onCanPlay(event);
+     ++this.onCanPlayTriggered === 1 && onCanPlay && onCanPlay(event);
   }
 
   private onPlay = () => {
