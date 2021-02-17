@@ -643,5 +643,52 @@ describe('VideoRenderer', () => {
       expect(onTimeChange).toHaveBeenCalledWith(10, 25);
       expect(onTimeChange).toHaveBeenCalledWith(11, 25);
     });
+
+    it("should only fire onCanPlay once if browser fires multiple", () => {
+      const onCanPlay = jest.fn();
+      const { component } = setup({
+        onCanPlay,
+      });
+
+      simulate(component, "canPlay", {
+        currentTime: 0,
+        volume: 0.5,
+        duration: 25,
+      });
+      simulate(component, "canPlay", {
+        currentTime: 0,
+        volume: 0.5,
+        duration: 25,
+      });
+
+      expect(onCanPlay).toHaveBeenCalledTimes(1);
+    });
+
+    it("should reset internal hasCanPlayTriggered check on src change", () => {
+      const onCanPlay = jest.fn();
+      const { component } = setup({
+        onCanPlay,
+      });
+
+      simulate(component, "canPlay", {
+        currentTime: 0,
+        volume: 0.5,
+        duration: 25,
+      });
+
+      expect(onCanPlay).toHaveBeenCalledTimes(1);
+
+      component.setProps({
+        src: "new-video-url",
+      });
+
+      simulate(component, "canPlay", {
+        currentTime: 0,
+        volume: 0.5,
+        duration: 25,
+      });
+
+      expect(onCanPlay).toHaveBeenCalledTimes(2);
+    });
   });
 });
