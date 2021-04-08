@@ -10,7 +10,6 @@
   "license": "MIT",
   "devDependencies": {
     "@atlaskit/button": "^7.0.2",
-    "@atlaskit/field-range": "^9.0.0",
     "@atlaskit/icon": "^11.0.0",
     "@atlaskit/single-select": "^4.0.3",
     "@atlaskit/spinner": "^8.0.0",
