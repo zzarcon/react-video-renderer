@@ -1,4 +1,4 @@
-import styled, {injectGlobal} from 'styled-components';
+import styled, { injectGlobal } from 'styled-components';
 
 injectGlobal`
   * {
@@ -11,13 +11,9 @@ injectGlobal`
   }
 `;
 
-export const AppWrapper = styled.div`
-  
-`;
+export const AppWrapper = styled.div``;
 
-export const Timebar = styled.progress`
-
-`;
+export const Timebar = styled.progress``;
 
 export const TimebarWrapper = styled.div`
   position: absolute;
@@ -41,9 +37,12 @@ export const MutedIndicator = styled.div`
   opacity: 0;
   pointer-events: none;
 
-  ${(props: VolumeWrapperProps) => props.isMuted ? `
+  ${(props: VolumeWrapperProps) =>
+    props.isMuted
+      ? `
     opacity: 1;
-  ` : ''}
+  `
+      : ''}
 `;
 
 export const VolumeWrapper = styled.div`
@@ -53,7 +52,7 @@ export const VolumeWrapper = styled.div`
   position: relative;
   width: 35px;
   overflow: hidden;
-  transition: width .3s ease-out; 
+  transition: width 0.3s ease-out;
   transition-delay: 1s;
 
   input {
@@ -62,11 +61,11 @@ export const VolumeWrapper = styled.div`
 
   &:hover {
     width: 165px;
-    transition: width .3s
+    transition: width 0.3s;
   }
   &:active {
     width: 165px;
-    transition: width .3s
+    transition: width 0.3s;
   }
 `;
 
@@ -86,7 +85,7 @@ export const BufferedProgress = styled.progress`
 export const TimeLine = styled.div`
   width: 100%;
   height: 3px;
-  background-color: rgba(255,255,255,.2);
+  background-color: rgba(255, 255, 255, 0.2);
   border-radius: 5px;
   position: relative;
 `;
@@ -111,14 +110,12 @@ export const Thumb = styled.div`
 `;
 
 export const BufferedTime = styled.div`
-  background-color: rgba(255,255,255,.4);
+  background-color: rgba(255, 255, 255, 0.4);
   height: inherit;
   border-radius: inherit;
 `;
 
-export const TimeRangeWrapper = styled.div`
-
-`;
+export const TimeRangeWrapper = styled.div``;
 
 export const ControlsWrapper = styled.div`
   display: flex;
@@ -156,12 +153,47 @@ export const RightControls = styled.div`
   align-items: center;
 `;
 
+export const VideoRendererWrapper = styled.div`
+  text-align: center;
+  position: relative;
+  top: 100px;
+  width: 100%;
+  overflow: hidden;
+  background: black;
+  height: calc(100vh - 200px);
+`;
+
+export const PlaybackSpeedWrapper = styled.div`
+  > div {
+    width: 135px;
+  }
+
+  label {
+    float: left;
+    margin-right: 10px;
+  }
+`;
+
 export const VideoWrapper = styled.div`
   display: flex;
+  width: 100%;
   height: 100%;
   align-items: center;
   justify-content: center;
   flex-direction: column;
+
+  video {
+    position: relative;
+    height: 100%;
+  }
+
+  video::cue,
+  video::-webkit-media-text-track-display-backdrop,
+  video::-webkit-media-text-track-display,
+  video::-webkit-media-text-track-container {
+    opacity: 0;
+    background-color: transparent !important;
+  }
 `;
 
 export const ErrorWrapper = styled.div`
@@ -171,25 +203,13 @@ export const ErrorWrapper = styled.div`
   top: 50%;
   transform: translate(-50%, -50%);
   font-size: 25px;
-`
+`;
 
 export const SelectWrapper = styled.div`
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1;
-`;
-
-export const VideoRendererWrapper = styled.div`
-  text-align: center;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 100%;
-  overflow: hidden;
-  background: black;
-  height: calc(100% - 135px);
-  margin-top: 17px;
 `;
 
 export const SpinnerWrapper = styled.div`
@@ -212,13 +232,19 @@ export const BuiltWithWrapper = styled.div`
   border: 1px solid #ccc;
   border-radius: 3px;
   padding: 5px;
-  
+
   a {
     color: black;
   }
 `;
 
-export const PlaybackSpeedWrapper = styled.div`
-  background: white;
-  padding-top: 80px;
+export const SubtitlesWrapper = styled.div`
+  position: absolute;
+  bottom: 120px;
+  font-size: 1.8rem;
+  font-weight: 600;
+  -webkit-text-fill-color: white;
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: black;
+  color: white;
 `;

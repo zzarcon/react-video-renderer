@@ -45,14 +45,6 @@
     babel-runtime "^6.26.0"
     styled-components "1.4.6 - 3"
 
-"@atlaskit/field-range@^9.0.0":
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/@atlaskit/field-range/-/field-range-9.0.0.tgz#08a5595bc769b2793117cec63cc72a207a26a987"
-  integrity sha512-ApVzS1B+ijJTEBoV3jr0y8/t4mxVCzxurv0xVvqjpgY8zj6Tg9keftOqQcnOYxINgRZLXxb7vN4JbUWhUMFYSw==
-  dependencies:
-    "@atlaskit/theme" "^10.0.0"
-    "@babel/runtime" "^7.0.0"
-
 "@atlaskit/icon@^11.0.0", "@atlaskit/icon@^11.3.0":
   version "11.3.2"
   resolved "https://registry.yarnpkg.com/@atlaskit/icon/-/icon-11.3.2.tgz#59e3583ea4c1039f4cd61ae5cd0b19a2beb9ef9f"
@@ -126,15 +118,6 @@
     "@atlaskit/theme" "^4.0.4"
     babel-runtime "^6.26.0"
     react-transition-group "^2.2.1"
-
-"@atlaskit/theme@^10.0.0":
-  version "10.0.1"
-  resolved "https://registry.yarnpkg.com/@atlaskit/theme/-/theme-10.0.1.tgz#91c6fed6e369f154b7af2d99fbed98d9cefef6e6"
-  integrity sha512-XUor9lYlX0yTRSxd/rvaL8i2gdm0PDbOV+KhuezpuGBaS0opzseRrCnEc+OMGmpWRYHjCRyEugp6FwSSquFb8w==
-  dependencies:
-    exenv "^1.2.2"
-    prop-types "^15.5.10"
-    tslib "^1.9.3"
 
 "@atlaskit/theme@^3.2.2":
   version "3.2.2"
@@ -397,7 +380,7 @@
     core-js-pure "^3.0.0"
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime@^7.0.0", "@babel/runtime@^7.10.2":
+"@babel/runtime@^7.10.2":
   version "7.11.2"
   resolved "https://packages.atlassian.com/api/npm/npm-remote/@babel/runtime/-/runtime-7.11.2.tgz#f549c13c754cc40b87644b9fa9f09a6a95fe0736"
   integrity sha1-9UnBPHVMxAuHZEufqfCaapX+BzY=
@@ -7827,7 +7810,7 @@ tsconfig-paths@^3.9.0:
     minimist "^1.2.0"
     strip-bom "^3.0.0"
 
-tslib@^1.13.0, tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
+tslib@^1.13.0, tslib@^1.8.1, tslib@^1.9.0:
   version "1.13.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.13.0.tgz#c881e13cc7015894ed914862d276436fa9a47043"
   integrity sha512-i/6DQjL8Xf3be4K/E6Wgpekn5Qasl1usyw++dAA35Ue5orEn65VIxOA+YvNNl9HV3qv70T7CNwjODHZrLwvd1Q==

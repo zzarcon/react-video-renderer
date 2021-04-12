@@ -1,4 +1,5 @@
 # react-video-renderer [![Build Status](https://travis-ci.org/zzarcon/react-video-renderer.svg?branch=master)](https://travis-ci.org/zzarcon/react-video-renderer)
+
 > Build custom video players effortless
 
 * Render props, get all video state passed down as props.
@@ -8,17 +9,17 @@
 * Dependency free, [<2KB size](https://bundlephobia.com/result?p=react-video-renderer)
 * Cross-browser support, no more browser hacks.
 
-# Demo 🎩
+## Demo 🎩
 
 [https://zzarcon.github.io/react-video-renderer](https://zzarcon.github.io/react-video-renderer)
 
-# Installation 🚀
+## Installation 🚀
 
-```
-$ yarn add react-video-renderer
+```bash
+yarn add react-video-renderer
 ```
 
-# Usage ⛏
+## Usage ⛏
 
 > Render video state and communicate user interactions up when volume or time changes.
 
@@ -45,9 +46,9 @@ import Video from 'react-video-renderer';
   <br><br>
 </div>
 
-# Api 💅
+## Api 💅
 
-**props**
+### Props
 
 ```typescript
 interface Props {
@@ -56,21 +57,23 @@ interface Props {
   controls?: boolean;
   autoPlay?: boolean;
   preload?: string;
+  textTracks?: VideoTextTracks;
 }
 ```
 
-**render method**
+### Render method
 
 ```typescript
-type RenderCallback = (videoElement: ReactNode, state: VideoState, actions: VideoActions) => ReactNode;
+type RenderCallback = (reactElement: ReactElement<HTMLMediaElement>, state: VideoState, actions: VideoActions, ref: React.RefObject<HTMLMediaElement>) => ReactNode;
 ```
 
-**state**
+### State
 
 ```typescript
 interface VideoState {
   status: 'playing' | 'paused' | 'errored';
   currentTime: number;
+  currentActiveCues: (kind: VideoTextTrackKind, lang: string) => TextTrackCueList | null | undefined;
   volume: number;
   duration: number;
   buffered: number;
@@ -80,7 +83,7 @@ interface VideoState {
 }
 ```
 
-**actions**
+### Actions
 
 ```typescript
 interface VideoActions {
@@ -95,9 +98,9 @@ interface VideoActions {
 }
 ```
 
-# Error handling 💥
+## Error handling 💥
 
-> this is all you need to detect video errors 
+> this is all you need to detect video errors
 
 ```jsx
 <Video src="some-error-video.mov">
@@ -119,12 +122,12 @@ interface VideoActions {
 </Video>
 ```
 
-# Loading state ✨
+## Loading state ✨
 
 > you can still interact with the player regardless if the video is loading or not
 
 ```jsx
-<Video src="me-video.mp4">
+<Video src="my-video.mp4">
   {(video, state, actions) => {
     const loadingComponent = state.isLoading ? 'loading...' : undefined;
 
@@ -140,6 +143,46 @@ interface VideoActions {
 </Video>
 ```
 
-# Author 🧔
+## Video text tracks 🚂
+
+> HTML5 [text tracks](https://html.spec.whatwg.org/multipage/media.html#the-track-element) support for videos.
+>
+> subtitles can be rendered natively, or they can be rendered using `VideoState.currentActiveCues` property:
+
+```jsx
+<Video 
+  src="my-video.mp4"
+  textTracks={{
+    'subtitles': {
+      selectedTrack: 0,
+      tracks: [
+        { src: 'subtitles-en.vtt', lang: 'en', label: 'Subtitles (english)' },
+        { src: 'subtitles-es.vtt', lang: 'es', label: 'Subtitles (spanish)' },
+      ]
+    }
+  }}
+>
+  {(video, state, actions) => {
+    const cues = state.currentActiveCues('subtitles', 'en');
+    const subtitles =
+      cue && cue.length > 0 ? (
+        <div>
+          {Array.prototype.map.call(currentEnglishSubtitlesCues, (cue, i) => <span key={i}>{cue.text}</span>)}
+        </div>
+      ) : undefined;
+
+    return (
+      <div>
+        {video}
+        {subtitles}
+        <button onClick={actions.play}>Play</button>
+        <button onClick={actions.pause}>Pause</button>
+      </div>
+    )
+  }}
+</Video>
+```
+
+## Author 🧔
 
 [@zzarcon](https://twitter.com/zzarcon)
