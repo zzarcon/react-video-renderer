@@ -154,7 +154,7 @@ interface VideoActions {
   src="my-video.mp4"
   textTracks={{
     'subtitles': {
-      selectedTrack: 0,
+      selectedTrackIndex: 0,
       tracks: [
         { src: 'subtitles-en.vtt', lang: 'en', label: 'Subtitles (english)' },
         { src: 'subtitles-es.vtt', lang: 'es', label: 'Subtitles (spanish)' },
