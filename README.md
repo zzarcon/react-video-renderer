@@ -167,7 +167,7 @@ interface VideoActions {
     const subtitles =
       cue && cue.length > 0 ? (
         <div>
-          {Array.prototype.map.call(currentEnglishSubtitlesCues, (cue, i) => <span key={i}>{cue.text}</span>)}
+          {Array.prototype.map.call(cues, (cue, i) => <span key={i}>{cue.text}</span>)}
         </div>
       ) : undefined;
 
