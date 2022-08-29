@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Component, ReactElement, ReactNode, SyntheticEvent, RefObject, MediaHTMLAttributes } from 'react';
 import { VideoTextTracks, VideoTextTrackKind, getVideoTextTrackId } from './text';
-import { requestFullScreen } from './utils';
+import { getDocument, requestFullScreen } from './utils';
 
 export type VideoStatus = 'playing' | 'paused' | 'errored';
 export type VideoError = MediaError | null;
@@ -16,6 +16,8 @@ export interface VideoState {
   isMuted: boolean;
   isLoading: boolean;
   error?: VideoError;
+  isPictureInPictureActive: boolean;
+  isPictureInPictureEnabled: boolean;
 }
 
 export type NavigateFunction = (time: number) => void;
@@ -32,6 +34,9 @@ export interface VideoActions {
   mute: () => void;
   unmute: () => void;
   toggleMute: () => void;
+  requestPictureInPicture: () => void;
+  exitPictureInPicture: () => void;
+  togglePictureInPicture: () => void;
 }
 
 export type RenderCallback = (
@@ -195,6 +200,8 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   private get videoState(): VideoState {
     const { currentTime, volume, status, duration, buffered, isMuted, isLoading, error } = this.state;
 
+    const { isPictureInPictureEnabled, isPictureInPictureActive } = this;
+
     return {
       currentTime,
       currentActiveCues: (kind: VideoTextTrackKind, lang: string) =>
@@ -206,6 +213,8 @@ export class Video extends Component<VideoProps, VideoComponentState> {
       isMuted,
       isLoading,
       error,
+      isPictureInPictureActive,
+      isPictureInPictureEnabled,
     };
   }
 
@@ -249,6 +258,37 @@ export class Video extends Component<VideoProps, VideoComponentState> {
     }
   };
 
+  private get isPictureInPictureActive(): boolean {
+    return !!getDocument()?.pictureInPictureElement;
+  }
+
+  private get isPictureInPictureEnabled(): boolean {
+    const { sourceType } = this.props;
+    return !!getDocument()?.pictureInPictureEnabled && sourceType === 'video';
+  }
+
+  private exitPictureInPicture = () => {
+    this.isPictureInPictureActive && getDocument()?.exitPictureInPicture();
+  };
+
+  private requestPictureInPicture = async () => {
+    if (!this.isPictureInPictureEnabled) {
+      return;
+    }
+    try {
+      // If the binary hasn't been loaded yet, this can throw an error
+      await this.videoRef.current?.requestPictureInPicture();
+    } catch (e) {}
+  };
+
+  private togglePictureInPicture = () => {
+    if (this.isPictureInPictureActive) {
+      this.exitPictureInPicture();
+    } else {
+      this.requestPictureInPicture();
+    }
+  };
+
   private mute = () => {
     const { volume } = this.state;
 
@@ -271,7 +311,20 @@ export class Video extends Component<VideoProps, VideoComponentState> {
   };
 
   private get actions(): VideoActions {
-    const { play, pause, navigate, setVolume, setPlaybackSpeed, requestFullscreen, mute, unmute, toggleMute } = this;
+    const {
+      play,
+      pause,
+      navigate,
+      setVolume,
+      setPlaybackSpeed,
+      requestFullscreen,
+      mute,
+      unmute,
+      toggleMute,
+      requestPictureInPicture,
+      exitPictureInPicture,
+      togglePictureInPicture,
+    } = this;
 
     return {
       play,
@@ -283,6 +336,9 @@ export class Video extends Component<VideoProps, VideoComponentState> {
       mute,
       unmute,
       toggleMute,
+      requestPictureInPicture,
+      exitPictureInPicture,
+      togglePictureInPicture,
     };
   }
 
