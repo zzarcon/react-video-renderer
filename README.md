@@ -2,12 +2,12 @@
 
 > Build custom video players effortless
 
-* Render props, get all video state passed down as props.
-* Bidirectional flow to render and update the video state in a declarative way.
-* No side effects out of the box, you just need to build the UI.
-* Actions handling: play, pause, mute, unmute, navigate, etc
-* Dependency free, [<2KB size](https://bundlephobia.com/result?p=react-video-renderer)
-* Cross-browser support, no more browser hacks.
+- Render props, get all video state passed down as props.
+- Bidirectional flow to render and update the video state in a declarative way.
+- No side effects out of the box, you just need to build the UI.
+- Actions handling: play, pause, mute, unmute, navigate, etc
+- Dependency free, [<2KB size](https://bundlephobia.com/result?p=react-video-renderer)
+- Cross-browser support, no more browser hacks.
 
 ## Demo 🎩
 
@@ -30,15 +30,18 @@ import Video from 'react-video-renderer';
   {(video, state, actions) => (
     <div>
       {video}
-      <div>{state.currentTime} / {state.duration} / {state.buffered}</div>
+      <div>
+        {state.currentTime} / {state.duration} / {state.buffered}
+      </div>
       <progress value={state.currentTime} max={state.duration} onChange={actions.navigate} />
       <progress value={state.volume} max={1} onChange={actions.setVolume} />
       <button onClick={actions.play}>Play</button>
       <button onClick={actions.pause}>Pause</button>
       <button onClick={actions.requestFullScreen}>Fullscreen</button>
+      <button onClick={actions.togglePictureInPicture}>Picture In Picture</button>
     </div>
   )}
-</Video>
+</Video>;
 ```
 
 <div align="center">
@@ -64,7 +67,12 @@ interface Props {
 ### Render method
 
 ```typescript
-type RenderCallback = (reactElement: ReactElement<HTMLMediaElement>, state: VideoState, actions: VideoActions, ref: React.RefObject<HTMLMediaElement>) => ReactNode;
+type RenderCallback = (
+  reactElement: ReactElement<HTMLMediaElement>,
+  state: VideoState,
+  actions: VideoActions,
+  ref: React.RefObject<HTMLMediaElement>
+) => ReactNode;
 ```
 
 ### State
@@ -106,18 +114,10 @@ interface VideoActions {
 <Video src="some-error-video.mov">
   {(video, state) => {
     if (state.status === 'errored') {
-      return (
-        <ErrorWrapper>
-          Error
-        </ErrorWrapper>
-      );
+      return <ErrorWrapper>Error</ErrorWrapper>;
     }
 
-    return (
-      <div>
-        {video}
-      </div>
-    )
+    return <div>{video}</div>;
   }}
 </Video>
 ```
@@ -138,7 +138,7 @@ interface VideoActions {
         <button onClick={actions.play}>Play</button>
         <button onClick={actions.pause}>Pause</button>
       </div>
-    )
+    );
   }}
 </Video>
 ```
@@ -150,16 +150,16 @@ interface VideoActions {
 > subtitles can be rendered natively, or they can be rendered using `VideoState.currentActiveCues` property:
 
 ```jsx
-<Video 
+<Video
   src="my-video.mp4"
   textTracks={{
-    'subtitles': {
+    subtitles: {
       selectedTrackIndex: 0,
       tracks: [
         { src: 'subtitles-en.vtt', lang: 'en', label: 'Subtitles (english)' },
         { src: 'subtitles-es.vtt', lang: 'es', label: 'Subtitles (spanish)' },
-      ]
-    }
+      ],
+    },
   }}
 >
   {(video, state, actions) => {
@@ -167,7 +167,9 @@ interface VideoActions {
     const subtitles =
       cue && cue.length > 0 ? (
         <div>
-          {Array.prototype.map.call(cues, (cue, i) => <span key={i}>{cue.text}</span>)}
+          {Array.prototype.map.call(cues, (cue, i) => (
+            <span key={i}>{cue.text}</span>
+          ))}
         </div>
       ) : undefined;
 
@@ -178,7 +180,7 @@ interface VideoActions {
         <button onClick={actions.play}>Play</button>
         <button onClick={actions.pause}>Pause</button>
       </div>
-    )
+    );
   }}
 </Video>
 ```

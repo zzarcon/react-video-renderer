@@ -3,6 +3,7 @@ import { Component } from 'react';
 import VidPlayIcon from '@atlaskit/icon/glyph/vid-play';
 import VidPauseIcon from '@atlaskit/icon/glyph/vid-pause';
 import VidFullScreenOnIcon from '@atlaskit/icon/glyph/vid-full-screen-on';
+import EditorTableDisplayOptionsIcon from '@atlaskit/icon/glyph/editor/table-display-options';
 import VolumeIcon from '@atlaskit/icon/glyph/hipchat/outgoing-sound';
 import Button from '@atlaskit/button';
 import Select from '@atlaskit/single-select';
@@ -245,6 +246,12 @@ export default class App extends Component<{}, AppState> {
               const fullScreenButton = sourceType === 'video' && (
                 <Button iconBefore={<VidFullScreenOnIcon label="fullscreen" />} onClick={actions.requestFullscreen} />
               );
+              const pictureInPictureButton = videoState.isPictureInPictureEnabled && sourceType === 'video' && (
+                <Button
+                  iconBefore={<EditorTableDisplayOptionsIcon label="pictureinPicture" />}
+                  onClick={actions.togglePictureInPicture}
+                />
+              );
               const hdButton = sourceType === 'video' && <Button onClick={this.toggleHD}>HD</Button>;
 
               const playbackSpeedSelect = (
@@ -306,6 +313,7 @@ export default class App extends Component<{}, AppState> {
                         {playbackSpeedSelect}
                         {hdButton}
                         {fullScreenButton}
+                        {pictureInPictureButton}
                       </RightControls>
                     </ControlsWrapper>
                   </TimebarWrapper>
