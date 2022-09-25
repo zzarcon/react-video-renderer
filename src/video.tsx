@@ -41,7 +41,7 @@ export type RenderCallback = (
   ref: RefObject<SourceElement>
 ) => ReactNode;
 
-export interface VideoProps {
+export interface VideoProps extends Omit<HTMLProps<HTMLVideoElement>, 'children'> {
   src: string;
   children: RenderCallback;
   defaultTime: number;
